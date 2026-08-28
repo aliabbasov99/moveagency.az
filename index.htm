@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.min.css" integrity="sha512-QeR2VH+lsBE5LSAe1Q5EnTBbe7XTBubt8dG93Y7gidSgdMCr8nVqKcfKAMyN96SV8KDbZVTDXChatu5G2KQGzg==" crossorigin="anonymous" referrerpolicy="no-referrer" /> 
+    
+    <link rel="stylesheet" href="./style/main.css">
+</head>
+
+<!-- Fullscreen Video Modal -->
+<div id="video-modal" class="fixed inset-0 z-[100] bg-black/90 backdrop-blur-sm hidden flex items-center justify-center opacity-0 transition-opacity duration-300 cursor-pointer" onclick="closeVideoModal()">
+    
+    <!-- Bağlama X İkonu -->
+    <button class="absolute top-4 right-4 md:top-8 md:right-8 text-white/70 hover:text-[#ff4b01] text-3xl md:text-4xl z-[110] transition-colors">
+        <i class="fa-solid fa-xmark"></i>
+    </button>
+    
+    <!-- Ortadakı Video Konteyneri -->
+    <div id="modal-video-container" class="relative w-[85%] max-w-[400px] aspect-[9/16] rounded-xl overflow-hidden shadow-[0_0_40px_rgba(255,75,1,0.15)] scale-95 transition-transform duration-300 bg-black">
+        <!-- Overlay (İstifadəçi ekranda hara toxunursa toxunsun video bağlansın deyə üzərini şəffaf örtürük) -->
+        <div class="absolute inset-0 z-10 w-full h-full"></div>
+        
+        <!-- Video Player -->
+        <video id="modal-video" class="w-full h-full object-cover" playsinline>
+            <source id="modal-video-source" src="" type="video/mp4">
+        </video>
+    </div>
+</div>
+    <body class="bg-[#161819]">
+<div class="bg-[#101010] relative z-50">    <div class="container flex flex-row justify-between mx-auto max-w-[550px] px-4 lg:px-0 md:max-w-[720px] lg:max-w-4xl xl:max-w-6xl 2xl:max-w-7xl items-center text-[#ff4b01]">
+        
+        <!-- Logo -->
+        <img src="./assets/static/ma_logo.webp" class="max-w-40 flex-shrink w-full md:max-w-60 py-2" alt="Logo">
+
+        <!-- Mobil Hamburger Düyməsi -->
+        <button id="menu-btn" class="lg:hidden text-2xl focus:outline-none cursor-pointer py-2 px-1 text-[#ff4b01]">
+            <i id="menu-icon" class="fa-solid fa-bars transition-transform duration-300"></i>
+        </button>
+
+        <!-- Menyu Siyahısı -->
+        <div id="menu" class="max-h-0 opacity-0 overflow-hidden absolute top-full left-0 w-full bg-[#101010] shadow-xl flex flex-col gap-5 items-center transition-all duration-300 ease-in-out lg:static lg:max-h-none lg:opacity-100 lg:overflow-visible lg:flex-row lg:w-auto lg:shadow-none lg:p-0 font-['Montserrat']">
+<span class="cursor-pointer relative py-1 after:absolute after:left-0 after:bottom-0 after:h-[2px] after:w-full after:bg-[#ff4b01]">
+    Ana səhifə
+</span>            <span class="cursor-pointer relative py-1 after:absolute after:left-0 after:bottom-0 after:h-[2px] after:w-0 hover:after:w-full after:bg-[#ff4b01] after:transition-all after:duration-300">Xidmətlər</span>
+            <span class="cursor-pointer relative py-1 after:absolute after:left-0 after:bottom-0 after:h-[2px] after:w-0 hover:after:w-full after:bg-[#ff4b01] after:transition-all after:duration-300">Portfolio</span>
+            <span class="cursor-pointer relative py-1 after:absolute after:left-0 after:bottom-0 after:h-[2px] after:w-0 hover:after:w-full after:bg-[#ff4b01] after:transition-all after:duration-300">Əlaqə</span>
+            <span class="cursor-pointer relative py-1 after:absolute after:left-0 after:bottom-0 after:h-[2px] after:w-0 hover:after:w-full after:bg-[#ff4b01] after:transition-all after:duration-300">AZ</span>
+            
+            <button class="border-2 border-[#ff4b01] cursor-pointer text-[#ff4b01] hover:bg-[#ff4b01] hover:text-white font-clash py-1.5 px-4 rounded transition-colors duration-200 mb-6 lg:mb-0">
+                Müraciət et
+            </button>
+        </div>
+
+    </div>
+</div>
+
+<div class="bg-[#161819]  overflow-hidden bg-black/50 bg-blend-multiply lg:bg-[url('./assets/static/hero_bg.jpg')] bg-bottom bg-cover bg-no-repeat lg:h-[calc(100vh-55px)] font-['Montserrat']">
+        <div class="container  text-white flex flex-col justify-between mx-auto max-w-[550px] px-4 lg:px-0 md:max-w-[720px] lg:max-w-4xl xl:max-w-6xl 2xl:max-w-7xl">
+        <div class="flex lg:pt-20 wrap justify flex-col lg:flex-row py-6 items-center">
+            <div class="div flex flex-col gap-4 items-center flex-1">
+<div class="flex flex-wrap items-center justify-center gap-3 text-center text-3xl sm:text-3xl md:text-3xl lg:text-4xl font-bold px-4">
+  <span>Brendini <span class="text-[#ff4b01]">hərəkətə</span> gətiririk</span>
+  <img 
+    id="rocket"
+    src="./assets/static/rocket.png" 
+    onmouseenter="flyAway(this)"
+    class="w-8 h-8 sm:w-12 sm:h-12 lg:w-16 lg:h-16 object-contain shrink-0 transition-all duration-1000 ease-in-out cursor-pointer" 
+    alt="Rocket"
+  >
+</div>
+
+
+
+                            <button class="border-2 max-w-40 border-[#10B981] cursor-pointer text-[#10B981] hover:bg-[#10B981] hover:text-white font-clash py-1.5 px-2 lg:py-3 lg:px-4 rounded transition-colors duration-200 lg:mb-0">
+                <i class="fa-solid fa-envelope"></i>
+                                TƏKLİF AL
+            </button>   
+            <div class="text-md max-w-100 text-justify pt-12 py-4">
+                Lorem, ipsum dolor sit amet consectetur adipisicing elit. Nulla vel omnis eum, possimus voluptas nam deleniti quisquam sunt, magnam aspernatur commodi quo in laudantium officia obcaecati quis placeat dolores illo.
+            </div>
+            </div>
+            
+<img 
+  src="./assets/static/hero_image.jpg" 
+  alt="Hero Image"
+  class="w-full h-auto max-w-[400px] flex-shrink rounded-[20px]" 
+/>        
+        </div>
+    </div>
+</div>
+<div class="relative overflow-hidden bg-[#161819] py-8 font-['Montserrat']">
+    <div class="pointer-events-none absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/2 w-[1500px] h-[1200px] rounded-full bg-[radial-gradient(circle,_#ff4b01_0%,_transparent_70%)] opacity-30 blur-2xl"></div>
+    <div class="container z-10 text-white flex flex-col justify-between mx-auto max-w-[550px] px-4 lg:px-0 md:max-w-[720px] lg:max-w-4xl xl:max-w-6xl 2xl:max-w-7xl">
+        <h2 class="font-bold z-20 text-2xl lg:text-5xl text-center">Xidmətlərimiz</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full py-8 items-stretch justify-center max-w-6xl mx-auto">
+  
+  <!-- Kart 1: SMM -->
+  <div class="bg-[var(--black)] z-10 p-8 rounded-2xl flex flex-col items-start border border-gray-800/40 h-full">
+    <div class="w-16 h-16 mb-6 bg-[var(--primary)] [mask-image:url('./assets/static/smm.svg')] [mask-size:contain] [mask-repeat:no-repeat] [mask-position:center]"></div>
+    <h3 class="text-[var(--primary)] text-2xl font-bold mb-4">SMM</h3>
+    <ul class="space-y-2 text-gray-300 list-disc list-inside text-sm">
+      <li>Strateji Məzmun</li>
+      <li>Konsept Planlaması</li>
+      <li>Brend Tanınmağı və İzləyici Artımı</li>
+      <li>Kreativ Dizaynlar</li>
+    </ul>
+  </div>
+
+  <!-- Kart 2: Reklam İdarəsi -->
+  <div class="bg-[var(--black)] z-10 p-8 rounded-2xl flex flex-col items-start border border-gray-800/40 h-full">
+    <div class="w-16 h-16 mb-6 bg-[var(--primary)] [mask-image:url('./assets/static/add_managment.svg')] [mask-size:contain] [mask-repeat:no-repeat] [mask-position:center]"></div>
+    <h3 class="text-[var(--primary)] text-2xl font-bold mb-4">Reklam İdarəsi</h3>
+    <ul class="space-y-2 text-gray-300 list-disc list-inside text-sm">
+      <li>Dəqiq Hədəf Auditoriyasının Analizi</li>
+      <li>Satış Strategiyası</li>
+      <li>Büdcə Optimizasiyası</li>
+    </ul>
+  </div>
+
+  <!-- Kart 3: Reels (md ekranda tək qalıb ortalanır, lg ekranda normal 3-cü sütuna keçir) -->
+  <div class="bg-[var(--black)] z-10 p-8 rounded-2xl flex flex-col items-start border border-gray-800/40 h-full md:col-span-2 lg:col-span-1 md:w-1/2 lg:w-full md:justify-self-center">
+    <div class="w-16 h-16 mb-6 bg-[var(--primary)] [mask-image:url('./assets/static/reels.svg')] [mask-size:contain] [mask-repeat:no-repeat] [mask-position:center]"></div>
+    <h3 class="text-[var(--primary)] text-2xl font-bold mb-4">Reels</h3>
+    <ul class="space-y-2 text-gray-300 list-disc list-inside text-sm">
+      <li>Trend Ssenari və Konsept Hazırlanması</li>
+      <li>Peşəkar Çəkiliş və Montaj</li>
+      <li>Viral İzlənmə</li>
+      <li>Satış Yönümlü Formatlar</li>
+    </ul>
+  </div>
+
+</div>
+    </div>
+    
+</div>
+<div class="relative overflow-hidden bg-[#161819] py-12 font-['Montserrat']">
+    <div class="container z-10 text-white flex flex-col justify-between mx-auto max-w-[550px] px-4 lg:px-0 md:max-w-[720px] lg:max-w-4xl xl:max-w-6xl 2xl:max-w-7xl">
+        <h2 class="font-bold z-20 text-2xl lg:text-4xl text-center mb-8">Portfolio</h2>
+        
+        <!-- Tab Butonları -->
+        <div class="flex justify-center gap-0 mb-10 w-full max-w-[700px] mx-auto px-4 md:px-0">
+            <button id="tab-smm" class="flex-1 py-3 px-2 sm:px-6 text-sm md:text-base font-semibold transition-colors duration-300 rounded-none border border-[#ff4b01] bg-[#ff4b01] text-white cursor-pointer">
+                SƏHİFƏ İDARƏSİ
+            </button>
+            <button id="tab-cekilis" class="flex-1 py-3 px-2 sm:px-6 text-sm md:text-base font-semibold transition-colors duration-300 rounded-none border border-[#ff4b01] border-l-0 bg-transparent text-[#ff4b01] hover:bg-[#ff4b01]/10 cursor-pointer">
+                ÇƏKİLİŞLƏR
+            </button>
+            <button id="tab-enson" class="flex-1 py-3 px-2 sm:px-6 text-sm md:text-base font-semibold transition-colors duration-300 rounded-none border border-[#ff4b01] border-l-0 bg-transparent text-[#ff4b01] hover:bg-[#ff4b01]/10 cursor-pointer">
+                ƏN SON İŞLƏRİMİZ
+            </button>
+        </div>
+
+        <!-- SMM Kontenti -->
+        <div id="smm-content" class="block">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full items-stretch">
+                <!-- Kart 1 -->
+                <div class="group bg-[#222425] rounded-xl p-3 flex flex-row gap-4 items-center border border-transparent hover:border-[#ff4b01] transition-colors duration-300 cursor-pointer h-full">
+                    <div class="relative w-2/5 h-full min-h-[120px] rounded-lg overflow-hidden shrink-0 bg-gray-800">
+                        <img src="https://scontent.cdninstagram.com/v/t51.71878-15/658030200_933729905914200_1124516149167531690_n.jpg?stp=dst-jpg_s150x150_tt6&_nc_cat=102&ccb=7-5&_nc_sid=acbce5&_nc_ohc=CibzWiirmSYQ7kNvwGcVAHR&_nc_oc=Adq7o1B4oNzQvd8yQIWScHbpjRWPXtShfbrs4QtWY8udUivEHOuJqlxbudklCFWacFo&_nc_zt=23&_nc_ht=scontent.cdninstagram.com&_nc_gid=hd0gmGk8tnq0uNNzibVqVg&_nc_ss=7b6a8&oh=00_AQE8hLCGZvXAe5rXGXf8dKuZvFvSevLs_EDCt8Qi0DkfHA&oe=6A974937" alt="Müştəri 1" class="w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-300">
+                            <span class="bg-[#161819] border border-gray-700 text-white text-[10px] px-3 py-1.5 rounded-full flex items-center gap-1 shadow-lg">Daha ətraflı <i class="fa-solid fa-chevron-right text-[8px] text-[#ff4b01]"></i></span>
+                        </div>
+                    </div>
+                    <div class="flex flex-col justify-between h-full w-3/5 py-1">
+                        <div>
+                            <h3 class="text-white font-bold text-sm mb-1.5 leading-tight">Müştəri 1 (Gözəllik Salonu) — Instagram İdarəçiliyi</h3>
+                            <p class="text-gray-400 text-xs mb-3 line-clamp-2">Vizual estetik və aylıq məzmun planı.</p>
+                        </div>
+                        <div class="flex flex-wrap gap-1.5 mt-auto">
+                            <span class="bg-[#ff4b01]/15 text-[#ff4b01] text-[10px] px-2 py-0.5 rounded">SMM</span>
+                            <span class="bg-[#ff4b01]/15 text-[#ff4b01] text-[10px] px-2 py-0.5 rounded">Vizual</span>
+                            <span class="bg-[#ff4b01]/15 text-[#ff4b01] text-[10px] px-2 py-0.5 rounded">Məzmun</span>
+                        </div>
+                    </div>
+                </div>
+    
+                <!-- Kart 2 -->
+                <div class="group bg-[#222425] rounded-xl p-3 flex flex-row gap-4 items-center border border-transparent hover:border-[#ff4b01] transition-colors duration-300 cursor-pointer h-full">
+                    <div class="relative w-2/5 h-full min-h-[120px] rounded-lg overflow-hidden shrink-0 bg-gray-800">
+                        <img src="https://scontent.cdninstagram.com/v/t51.71878-15/658030200_933729905914200_1124516149167531690_n.jpg?stp=dst-jpg_s150x150_tt6&_nc_cat=102&ccb=7-5&_nc_sid=acbce5&_nc_ohc=CibzWiirmSYQ7kNvwGcVAHR&_nc_oc=Adq7o1B4oNzQvd8yQIWScHbpjRWPXtShfbrs4QtWY8udUivEHOuJqlxbudklCFWacFo&_nc_zt=23&_nc_ht=scontent.cdninstagram.com&_nc_gid=hd0gmGk8tnq0uNNzibVqVg&_nc_ss=7b6a8&oh=00_AQE8hLCGZvXAe5rXGXf8dKuZvFvSevLs_EDCt8Qi0DkfHA&oe=6A974937" alt="Müştəri 2" class="w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-300">
+                            <span class="bg-[#161819] border border-gray-700 text-white text-[10px] px-3 py-1.5 rounded-full flex items-center gap-1 shadow-lg">Daha ətraflı <i class="fa-solid fa-chevron-right text-[8px] text-[#ff4b01]"></i></span>
+                        </div>
+                    </div>
+                    <div class="flex flex-col justify-between h-full w-3/5 py-1">
+                        <div>
+                            <h3 class="text-white font-bold text-sm mb-1.5 leading-tight">Müştəri 2 (Restoran) — Instagram Marketing</h3>
+                            <p class="text-gray-400 text-xs mb-3 line-clamp-2">Reklam kampaniyaları və izləyici artımı.</p>
+                        </div>
+                        <div class="flex flex-wrap gap-1.5 mt-auto">
+                            <span class="bg-[#ff4b01]/15 text-[#ff4b01] text-[10px] px-2 py-0.5 rounded">Marketing</span>
+                            <span class="bg-[#ff4b01]/15 text-[#ff4b01] text-[10px] px-2 py-0.5 rounded">SMM</span>
+                            <span class="bg-[#ff4b01]/15 text-[#ff4b01] text-[10px] px-2 py-0.5 rounded">Reklam</span>
+                        </div>
+                    </div>
+                </div>
+    
+                <!-- Kart 3 -->
+                <div class="group bg-[#222425] rounded-xl p-3 flex flex-row gap-4 items-center border border-transparent hover:border-[#ff4b01] transition-colors duration-300 cursor-pointer h-full">
+                    <div class="relative w-2/5 h-full min-h-[120px] rounded-lg overflow-hidden shrink-0 bg-gray-800">
+                        <img src="https://scontent.cdninstagram.com/v/t51.71878-15/658030200_933729905914200_1124516149167531690_n.jpg?stp=dst-jpg_s150x150_tt6&_nc_cat=102&ccb=7-5&_nc_sid=acbce5&_nc_ohc=CibzWiirmSYQ7kNvwGcVAHR&_nc_oc=Adq7o1B4oNzQvd8yQIWScHbpjRWPXtShfbrs4QtWY8udUivEHOuJqlxbudklCFWacFo&_nc_zt=23&_nc_ht=scontent.cdninstagram.com&_nc_gid=hd0gmGk8tnq0uNNzibVqVg&_nc_ss=7b6a8&oh=00_AQE8hLCGZvXAe5rXGXf8dKuZvFvSevLs_EDCt8Qi0DkfHA&oe=6A974937" alt="Müştəri 3" class="w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-300">
+                            <span class="bg-[#161819] border border-gray-700 text-white text-[10px] px-3 py-1.5 rounded-full flex items-center gap-1 shadow-lg">Daha ətraflı <i class="fa-solid fa-chevron-right text-[8px] text-[#ff4b01]"></i></span>
+                        </div>
+                    </div>
+                    <div class="flex flex-col justify-between h-full w-3/5 py-1">
+                        <div>
+                            <h3 class="text-white font-bold text-sm mb-1.5 leading-tight">Müştəri 3 (Geyim Mağazası) — Instagram Satış</h3>
+                            <p class="text-gray-400 text-xs mb-3 line-clamp-2">Satış yönümlü Hekayə və Reels konseptləri.</p>
+                        </div>
+                        <div class="flex flex-wrap gap-1.5 mt-auto">
+                            <span class="bg-[#ff4b01]/15 text-[#ff4b01] text-[10px] px-2 py-0.5 rounded">Satış</span>
+                            <span class="bg-[#ff4b01]/15 text-[#ff4b01] text-[10px] px-2 py-0.5 rounded">Kreativ</span>
+                            <span class="bg-[#ff4b01]/15 text-[#ff4b01] text-[10px] px-2 py-0.5 rounded">SMM</span>
+                        </div>
+                    </div>
+                </div>
+    
+                <!-- Kart 4 -->
+                <div class="group bg-[#222425] rounded-xl p-3 flex flex-row gap-4 items-center border border-transparent hover:border-[#ff4b01] transition-colors duration-300 cursor-pointer h-full">
+                    <div class="relative w-2/5 h-full min-h-[120px] rounded-lg overflow-hidden shrink-0 bg-gray-800">
+                        <img src="https://scontent.cdninstagram.com/v/t51.71878-15/658030200_933729905914200_1124516149167531690_n.jpg?stp=dst-jpg_s150x150_tt6&_nc_cat=102&ccb=7-5&_nc_sid=acbce5&_nc_ohc=CibzWiirmSYQ7kNvwGcVAHR&_nc_oc=Adq7o1B4oNzQvd8yQIWScHbpjRWPXtShfbrs4QtWY8udUivEHOuJqlxbudklCFWacFo&_nc_zt=23&_nc_ht=scontent.cdninstagram.com&_nc_gid=hd0gmGk8tnq0uNNzibVqVg&_nc_ss=7b6a8&oh=00_AQE8hLCGZvXAe5rXGXf8dKuZvFvSevLs_EDCt8Qi0DkfHA&oe=6A974937" alt="Brend A" class="w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-300">
+                            <span class="bg-[#161819] border border-gray-700 text-white text-[10px] px-3 py-1.5 rounded-full flex items-center gap-1 shadow-lg">Daha ətraflı <i class="fa-solid fa-chevron-right text-[8px] text-[#ff4b01]"></i></span>
+                        </div>
+                    </div>
+                    <div class="flex flex-col justify-between h-full w-3/5 py-1">
+                        <div>
+                            <h3 class="text-white font-bold text-sm mb-1.5 leading-tight">Brend A (Reels Konseptləri)</h3>
+                            <p class="text-gray-400 text-xs mb-3 line-clamp-2">Viral məzmunun yaradılması.</p>
+                        </div>
+                        <div class="flex flex-wrap gap-1.5 mt-auto">
+                            <span class="bg-[#ff4b01]/15 text-[#ff4b01] text-[10px] px-2 py-0.5 rounded">Reels</span>
+                            <span class="bg-[#ff4b01]/15 text-[#ff4b01] text-[10px] px-2 py-0.5 rounded">Kreativ</span>
+                            <span class="bg-[#ff4b01]/15 text-[#ff4b01] text-[10px] px-2 py-0.5 rounded">Dizayn</span>
+                        </div>
+                    </div>
+                </div>
+    
+                <!-- Kart 5 -->
+                <div class="group bg-[#222425] rounded-xl p-3 flex flex-row gap-4 items-center border border-transparent hover:border-[#ff4b01] transition-colors duration-300 cursor-pointer h-full">
+                    <div class="relative w-2/5 h-full min-h-[120px] rounded-lg overflow-hidden shrink-0 bg-gray-800">
+                        <img src="https://scontent.cdninstagram.com/v/t51.71878-15/658030200_933729905914200_1124516149167531690_n.jpg?stp=dst-jpg_s150x150_tt6&_nc_cat=102&ccb=7-5&_nc_sid=acbce5&_nc_ohc=CibzWiirmSYQ7kNvwGcVAHR&_nc_oc=Adq7o1B4oNzQvd8yQIWScHbpjRWPXtShfbrs4QtWY8udUivEHOuJqlxbudklCFWacFo&_nc_zt=23&_nc_ht=scontent.cdninstagram.com&_nc_gid=hd0gmGk8tnq0uNNzibVqVg&_nc_ss=7b6a8&oh=00_AQE8hLCGZvXAe5rXGXf8dKuZvFvSevLs_EDCt8Qi0DkfHA&oe=6A974937" alt="Şirkət B" class="w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-300">
+                            <span class="bg-[#161819] border border-gray-700 text-white text-[10px] px-3 py-1.5 rounded-full flex items-center gap-1 shadow-lg">Daha ətraflı <i class="fa-solid fa-chevron-right text-[8px] text-[#ff4b01]"></i></span>
+                        </div>
+                    </div>
+                    <div class="flex flex-col justify-between h-full w-3/5 py-1">
+                        <div>
+                            <h3 class="text-white font-bold text-sm mb-1.5 leading-tight">Şirkət B (E-ticarət) — Instagram Strategiya</h3>
+                            <p class="text-gray-400 text-xs mb-3 line-clamp-2">Etibarlı brend imicinin yaradılması.</p>
+                        </div>
+                        <div class="flex flex-wrap gap-1.5 mt-auto">
+                            <span class="bg-[#ff4b01]/15 text-[#ff4b01] text-[10px] px-2 py-0.5 rounded">Strategiya</span>
+                            <span class="bg-[#ff4b01]/15 text-[#ff4b01] text-[10px] px-2 py-0.5 rounded">Marketing</span>
+                            <span class="bg-[#ff4b01]/15 text-[#ff4b01] text-[10px] px-2 py-0.5 rounded">Vizual</span>
+                        </div>
+                    </div>
+                </div>
+    
+                <!-- Kart 6 -->
+                <div class="group bg-[#222425] rounded-xl p-3 flex flex-row gap-4 items-center border border-transparent hover:border-[#ff4b01] transition-colors duration-300 cursor-pointer h-full">
+                    <div class="relative w-2/5 h-full min-h-[120px] rounded-lg overflow-hidden shrink-0 bg-gray-800">
+                        <img src="https://scontent.cdninstagram.com/v/t51.71878-15/658030200_933729905914200_1124516149167531690_n.jpg?stp=dst-jpg_s150x150_tt6&_nc_cat=102&ccb=7-5&_nc_sid=acbce5&_nc_ohc=CibzWiirmSYQ7kNvwGcVAHR&_nc_oc=Adq7o1B4oNzQvd8yQIWScHbpjRWPXtShfbrs4QtWY8udUivEHOuJqlxbudklCFWacFo&_nc_zt=23&_nc_ht=scontent.cdninstagram.com&_nc_gid=hd0gmGk8tnq0uNNzibVqVg&_nc_ss=7b6a8&oh=00_AQE8hLCGZvXAe5rXGXf8dKuZvFvSevLs_EDCt8Qi0DkfHA&oe=6A974937" alt="Müştəri C" class="w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-300">
+                            <span class="bg-[#161819] border border-gray-700 text-white text-[10px] px-3 py-1.5 rounded-full flex items-center gap-1 shadow-lg">Daha ətraflı <i class="fa-solid fa-chevron-right text-[8px] text-[#ff4b01]"></i></span>
+                        </div>
+                    </div>
+                    <div class="flex flex-col justify-between h-full w-3/5 py-1">
+                        <div>
+                            <h3 class="text-white font-bold text-sm mb-1.5 leading-tight">Müştəri C (Bloqer) — Fərdi Brendləşmə</h3>
+                            <p class="text-gray-400 text-xs mb-3 line-clamp-2">İştirakın artırılması və profilin idarə edilməsi.</p>
+                        </div>
+                        <div class="flex flex-wrap gap-1.5 mt-auto">
+                            <span class="bg-[#ff4b01]/15 text-[#ff4b01] text-[10px] px-2 py-0.5 rounded">SMM</span>
+                            <span class="bg-[#ff4b01]/15 text-[#ff4b01] text-[10px] px-2 py-0.5 rounded">Dizayn</span>
+                            <span class="bg-[#ff4b01]/15 text-[#ff4b01] text-[10px] px-2 py-0.5 rounded">İştirak</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- SMM Button -->
+            <div class="flex justify-center mt-10">
+                <button class="bg-[#ff4b01] rounded-sm text-white font-semibold px-6 py-2.5 hover:bg-[#e04200] transition-colors duration-300 flex items-center gap-2 cursor-pointer">
+                    Bütün SMM layihələri <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Çəkilişlərimiz Kontenti (İlkin olaraq gizlidir) -->
+<!-- Çəkilişlərimiz Kontenti (İlkin olaraq gizlidir) -->
+<div id="cekilis-content" class="hidden">
+    <!-- Mobildə 3, tabletdə 4, desktopda 5 sütun -->
+    <div class="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-1.5 md:gap-4 w-full">
+        
+        <!-- Video Kartı 1 -->
+        <div class="relative aspect-[9/16] bg-[#101010] rounded-md md:rounded-lg overflow-hidden group cursor-pointer border border-transparent hover:border-[#ff4b01] transition-colors" onclick="openVideoModal('https://res.cloudinary.com/ta8jgr46/video/upload/v1787915948/12155762_1080_1920_60fps.mp4')">
+            <!-- Videonun ilk saniyəsinin önbaxışı (uzantı .jpg olaraq dəyişdirilib) -->
+            <img src="https://res.cloudinary.com/ta8jgr46/video/upload/v1787915948/12155762_1080_1920_60fps.jpg" alt="Video Preview" class="w-full h-full object-cover">
+            
+            <!-- Play İkonu (Overlay) -->
+            <div class="absolute inset-0 bg-black/40 flex items-center justify-center group-hover:bg-black/20 transition-all duration-300">
+                <div class=" flex items-center justify-center transition-transform transform group-hover:scale-110">
+                    <i class="fa-solid fa-play text-white text-xl ml-1"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Video Kartı 2 (Nümunə üçün çoxaldılıb) -->
+        <div class="relative aspect-[9/16] bg-[#101010] rounded-md md:rounded-lg overflow-hidden group cursor-pointer border border-transparent hover:border-[#ff4b01] transition-colors" onclick="openVideoModal('https://res.cloudinary.com/ta8jgr46/video/upload/v1787915948/12155762_1080_1920_60fps.mp4')">
+            <img src="https://res.cloudinary.com/ta8jgr46/video/upload/v1787915948/12155762_1080_1920_60fps.jpg" alt="Video Preview" class="w-full h-full object-cover">
+            <!-- Play İkonu (Overlay) -->
+            <div class="absolute inset-0 bg-black/40 flex items-center justify-center group-hover:bg-black/20 transition-all duration-300">
+                <div class=" flex items-center justify-center transition-transform transform group-hover:scale-110">
+                    <i class="fa-solid fa-play text-white text-xl ml-1"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Video Kartı 3 (Nümunə üçün çoxaldılıb) -->
+        <div class="relative aspect-[9/16] bg-[#101010] rounded-md md:rounded-lg overflow-hidden group cursor-pointer border border-transparent hover:border-[#ff4b01] transition-colors" onclick="openVideoModal('https://res.cloudinary.com/ta8jgr46/video/upload/v1787915948/12155762_1080_1920_60fps.mp4')">
+            <img src="https://res.cloudinary.com/ta8jgr46/video/upload/v1787915948/12155762_1080_1920_60fps.jpg" alt="Video Preview" class="w-full h-full object-cover">
+            <!-- Play İkonu (Overlay) -->
+            <div class="absolute inset-0 bg-black/40 flex items-center justify-center group-hover:bg-black/20 transition-all duration-300">
+                <div class=" flex items-center justify-center transition-transform transform group-hover:scale-110">
+                    <i class="fa-solid fa-play text-white text-xl ml-1"></i>
+                </div>
+            </div>
+        </div>
+
+                <!-- Video Kartı 1 -->
+        <div class="relative aspect-[9/16] bg-[#101010] rounded-md md:rounded-lg overflow-hidden group cursor-pointer border border-transparent hover:border-[#ff4b01] transition-colors" onclick="openVideoModal('https://res.cloudinary.com/ta8jgr46/video/upload/v1787915948/12155762_1080_1920_60fps.mp4')">
+            <!-- Videonun ilk saniyəsinin önbaxışı (uzantı .jpg olaraq dəyişdirilib) -->
+            <img src="https://res.cloudinary.com/ta8jgr46/video/upload/v1787915948/12155762_1080_1920_60fps.jpg" alt="Video Preview" class="w-full h-full object-cover">
+            
+            <!-- Play İkonu (Overlay) -->
+            <div class="absolute inset-0 bg-black/40 flex items-center justify-center group-hover:bg-black/20 transition-all duration-300">
+                <div class=" flex items-center justify-center transition-transform transform group-hover:scale-110">
+                    <i class="fa-solid fa-play text-white text-xl ml-1"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Video Kartı 2 (Nümunə üçün çoxaldılıb) -->
+        <div class="relative aspect-[9/16] bg-[#101010] rounded-md md:rounded-lg overflow-hidden group cursor-pointer border border-transparent hover:border-[#ff4b01] transition-colors" onclick="openVideoModal('https://res.cloudinary.com/ta8jgr46/video/upload/v1787915948/12155762_1080_1920_60fps.mp4')">
+            <img src="https://res.cloudinary.com/ta8jgr46/video/upload/v1787915948/12155762_1080_1920_60fps.jpg" alt="Video Preview" class="w-full h-full object-cover">
+            <!-- Play İkonu (Overlay) -->
+            <div class="absolute inset-0 bg-black/40 flex items-center justify-center group-hover:bg-black/20 transition-all duration-300">
+                <div class=" flex items-center justify-center transition-transform transform group-hover:scale-110">
+                    <i class="fa-solid fa-play text-white text-xl ml-1"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Video Kartı 3 (Nümunə üçün çoxaldılıb) -->
+        <div class="relative aspect-[9/16] bg-[#101010] rounded-md md:rounded-lg overflow-hidden group cursor-pointer border border-transparent hover:border-[#ff4b01] transition-colors" onclick="openVideoModal('https://res.cloudinary.com/ta8jgr46/video/upload/v1787915948/12155762_1080_1920_60fps.mp4')">
+            <img src="https://res.cloudinary.com/ta8jgr46/video/upload/v1787915948/12155762_1080_1920_60fps.jpg" alt="Video Preview" class="w-full h-full object-cover">
+            <!-- Play İkonu (Overlay) -->
+            <div class="absolute inset-0 bg-black/40 flex items-center justify-center group-hover:bg-black/20 transition-all duration-300">
+                <div class=" flex items-center justify-center transition-transform transform group-hover:scale-110">
+                    <i class="fa-solid fa-play text-white text-xl ml-1"></i>
+                </div>
+            </div>
+        </div>
+
+                <!-- Video Kartı 1 -->
+        <div class="relative aspect-[9/16] bg-[#101010] rounded-md md:rounded-lg overflow-hidden group cursor-pointer border border-transparent hover:border-[#ff4b01] transition-colors" onclick="openVideoModal('https://res.cloudinary.com/ta8jgr46/video/upload/v1787915948/12155762_1080_1920_60fps.mp4')">
+            <!-- Videonun ilk saniyəsinin önbaxışı (uzantı .jpg olaraq dəyişdirilib) -->
+            <img src="https://res.cloudinary.com/ta8jgr46/video/upload/v1787915948/12155762_1080_1920_60fps.jpg" alt="Video Preview" class="w-full h-full object-cover">
+            
+            <!-- Play İkonu (Overlay) -->
+            <div class="absolute inset-0 bg-black/40 flex items-center justify-center group-hover:bg-black/20 transition-all duration-300">
+                <div class=" flex items-center justify-center transition-transform transform group-hover:scale-110">
+                    <i class="fa-solid fa-play text-white text-xl ml-1"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Video Kartı 2 (Nümunə üçün çoxaldılıb) -->
+        <div class="relative aspect-[9/16] bg-[#101010] rounded-md md:rounded-lg overflow-hidden group cursor-pointer border border-transparent hover:border-[#ff4b01] transition-colors" onclick="openVideoModal('https://res.cloudinary.com/ta8jgr46/video/upload/v1787915948/12155762_1080_1920_60fps.mp4')">
+            <img src="https://res.cloudinary.com/ta8jgr46/video/upload/v1787915948/12155762_1080_1920_60fps.jpg" alt="Video Preview" class="w-full h-full object-cover">
+            <!-- Play İkonu (Overlay) -->
+            <div class="absolute inset-0 bg-black/40 flex items-center justify-center group-hover:bg-black/20 transition-all duration-300">
+                <div class=" flex items-center justify-center transition-transform transform group-hover:scale-110">
+                    <i class="fa-solid fa-play text-white text-xl ml-1"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Video Kartı 3 (Nümunə üçün çoxaldılıb) -->
+        <div class="relative aspect-[9/16] bg-[#101010] rounded-md md:rounded-lg overflow-hidden group cursor-pointer border border-transparent hover:border-[#ff4b01] transition-colors" onclick="openVideoModal('https://res.cloudinary.com/ta8jgr46/video/upload/v1787915948/12155762_1080_1920_60fps.mp4')">
+            <img src="https://res.cloudinary.com/ta8jgr46/video/upload/v1787915948/12155762_1080_1920_60fps.jpg" alt="Video Preview" class="w-full h-full object-cover">
+            <!-- Play İkonu (Overlay) -->
+            <div class="absolute inset-0 bg-black/40 flex items-center justify-center group-hover:bg-black/20 transition-all duration-300">
+                <div class=" flex items-center justify-center transition-transform transform group-hover:scale-110">
+                    <i class="fa-solid fa-play text-white text-xl ml-1"></i>
+                </div>
+            </div>
+        </div>
+
+                <!-- Video Kartı 1 -->
+        <div class="relative aspect-[9/16] bg-[#101010] rounded-md md:rounded-lg overflow-hidden group cursor-pointer border border-transparent hover:border-[#ff4b01] transition-colors" onclick="openVideoModal('https://res.cloudinary.com/ta8jgr46/video/upload/v1787915948/12155762_1080_1920_60fps.mp4')">
+            <!-- Videonun ilk saniyəsinin önbaxışı (uzantı .jpg olaraq dəyişdirilib) -->
+            <img src="https://res.cloudinary.com/ta8jgr46/video/upload/v1787915948/12155762_1080_1920_60fps.jpg" alt="Video Preview" class="w-full h-full object-cover">
+            
+            <!-- Play İkonu (Overlay) -->
+            <div class="absolute inset-0 bg-black/40 flex items-center justify-center group-hover:bg-black/20 transition-all duration-300">
+                <div class=" flex items-center justify-center transition-transform transform group-hover:scale-110">
+                    <i class="fa-solid fa-play text-white text-xl ml-1"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Video Kartı 2 (Nümunə üçün çoxaldılıb) -->
+        <div class="relative aspect-[9/16] bg-[#101010] rounded-md md:rounded-lg overflow-hidden group cursor-pointer border border-transparent hover:border-[#ff4b01] transition-colors" onclick="openVideoModal('https://res.cloudinary.com/ta8jgr46/video/upload/v1787915948/12155762_1080_1920_60fps.mp4')">
+            <img src="https://res.cloudinary.com/ta8jgr46/video/upload/v1787915948/12155762_1080_1920_60fps.jpg" alt="Video Preview" class="w-full h-full object-cover">
+            <!-- Play İkonu (Overlay) -->
+            <div class="absolute inset-0 bg-black/40 flex items-center justify-center group-hover:bg-black/20 transition-all duration-300">
+                <div class=" flex items-center justify-center transition-transform transform group-hover:scale-110">
+                    <i class="fa-solid fa-play text-white text-xl ml-1"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Video Kartı 3 (Nümunə üçün çoxaldılıb) -->
+        <div class="relative aspect-[9/16] bg-[#101010] rounded-md md:rounded-lg overflow-hidden group cursor-pointer border border-transparent hover:border-[#ff4b01] transition-colors" onclick="openVideoModal('https://res.cloudinary.com/ta8jgr46/video/upload/v1787915948/12155762_1080_1920_60fps.mp4')">
+            <img src="https://res.cloudinary.com/ta8jgr46/video/upload/v1787915948/12155762_1080_1920_60fps.jpg" alt="Video Preview" class="w-full h-full object-cover">
+            <!-- Play İkonu (Overlay) -->
+            <div class="absolute inset-0 bg-black/40 flex items-center justify-center group-hover:bg-black/20 transition-all duration-300">
+                <div class=" flex items-center justify-center transition-transform transform group-hover:scale-110">
+                    <i class="fa-solid fa-play text-white text-xl ml-1"></i>
+                </div>
+            </div>
+        </div>
+
+        
+        
+    </div>
+</div>
+<div id="enson-content" class="lg:w-3/5 hidden lg:mx-auto text-center lg:min-h-[500px]">
+  <div class="sk-instagram-feed" data-embed-id="25709111"></div>
+  <script src="https://widgets.sociablekit.com/instagram-feed/widget.js" defer></script>
+</div>
+
+
+
+    </div>
+</div>
+
+<div class="relative overflow-hidden bg-[#161819] py-12 font-['Montserrat']">
+  <!-- Arxa fon işıq effekti -->
+  <div class="pointer-events-none absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/2  rounded-full opacity-20 blur-2xl"></div>
+
+  <div class="container z-10 text-white flex flex-col justify-between mx-auto max-w-[550px] px-4 lg:px-0 md:max-w-[720px] lg:max-w-4xl xl:max-w-6xl 2xl:max-w-7xl">
+    
+    <!-- Başlıq Hissəsi -->
+        <h2 class="font-bold z-20 text-2xl lg:text-5xl text-center">Müştərilərimiz</h2>
+
+
+    <!-- Şirkətlər Logoları Grid (Mobil: 2 sütun, Tablet: 3 sütun, Desktop: 5 sütun) -->
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 w-full py-6 items-center justify-center max-w-6xl mx-auto z-10">
+
+      <!-- 1. Lassa -->
+      <div class="bg-[var(--white,#fff)] rounded-md flex items-center justify-center border border-gray-800/40 h-28 transition-all group">
+        <img src="https://static.vecteezy.com/system/resources/thumbnails/019/909/625/small/mcdonald-s-transparent-mcdonald-s-free-free-png.png" alt="Lassa" class="max-h-30 max-w-full object-contain grayscale opacity-70 group-hover:grayscale-0 group-hover:opacity-100 transition-all">
+      </div>
+
+       <div class="bg-[var(--white,#fff)] rounded-md flex items-center justify-center border border-gray-800/40 h-28 transition-all group">
+        <img src="https://static.vecteezy.com/system/resources/thumbnails/019/909/625/small/mcdonald-s-transparent-mcdonald-s-free-free-png.png" alt="Lassa" class="max-h-30 max-w-full object-contain grayscale opacity-70 group-hover:grayscale-0 group-hover:opacity-100 transition-all">
+      </div>
+            <div class="bg-[var(--white,#fff)] rounded-md flex items-center justify-center border border-gray-800/40 h-28 transition-all group">
+        <img src="https://static.vecteezy.com/system/resources/thumbnails/019/909/625/small/mcdonald-s-transparent-mcdonald-s-free-free-png.png" alt="Lassa" class="max-h-30 max-w-full object-contain grayscale opacity-70 group-hover:grayscale-0 group-hover:opacity-100 transition-all">
+      </div>
+            <div class="bg-[var(--white,#fff)] rounded-md flex items-center justify-center border border-gray-800/40 h-28 transition-all group">
+        <img src="https://static.vecteezy.com/system/resources/thumbnails/019/909/625/small/mcdonald-s-transparent-mcdonald-s-free-free-png.png" alt="Lassa" class="max-h-30 max-w-full object-contain grayscale opacity-70 group-hover:grayscale-0 group-hover:opacity-100 transition-all">
+      </div>
+            <div class="bg-[var(--white,#fff)] rounded-md flex items-center justify-center border border-gray-800/40 h-28 transition-all group">
+        <img src="https://static.vecteezy.com/system/resources/thumbnails/019/909/625/small/mcdonald-s-transparent-mcdonald-s-free-free-png.png" alt="Lassa" class="max-h-30 max-w-full object-contain grayscale opacity-70 group-hover:grayscale-0 group-hover:opacity-100 transition-all">
+      </div>
+            <div class="bg-[var(--white,#fff)] rounded-md flex items-center justify-center border border-gray-800/40 h-28 transition-all group">
+        <img src="https://static.vecteezy.com/system/resources/thumbnails/019/909/625/small/mcdonald-s-transparent-mcdonald-s-free-free-png.png" alt="Lassa" class="max-h-30 max-w-full object-contain grayscale opacity-70 group-hover:grayscale-0 group-hover:opacity-100 transition-all">
+      </div>
+            <div class="bg-[var(--white,#fff)] rounded-md flex items-center justify-center border border-gray-800/40 h-28 transition-all group">
+        <img src="https://static.vecteezy.com/system/resources/thumbnails/019/909/625/small/mcdonald-s-transparent-mcdonald-s-free-free-png.png" alt="Lassa" class="max-h-30 max-w-full object-contain grayscale opacity-70 group-hover:grayscale-0 group-hover:opacity-100 transition-all">
+      </div>
+            <div class="bg-[var(--white,#fff)] rounded-md flex items-center justify-center border border-gray-800/40 h-28 transition-all group">
+        <img src="https://static.vecteezy.com/system/resources/thumbnails/019/909/625/small/mcdonald-s-transparent-mcdonald-s-free-free-png.png" alt="Lassa" class="max-h-30 max-w-full object-contain grayscale opacity-70 group-hover:grayscale-0 group-hover:opacity-100 transition-all">
+      </div>
+            <div class="bg-[var(--white,#fff)] rounded-md flex items-center justify-center border border-gray-800/40 h-28 transition-all group">
+        <img src="https://static.vecteezy.com/system/resources/thumbnails/019/909/625/small/mcdonald-s-transparent-mcdonald-s-free-free-png.png" alt="Lassa" class="max-h-30 max-w-full object-contain grayscale opacity-70 group-hover:grayscale-0 group-hover:opacity-100 transition-all">
+      </div>
+            <div class="bg-[var(--white,#fff)] rounded-md flex items-center justify-center border border-gray-800/40 h-28 transition-all group">
+        <img src="https://static.vecteezy.com/system/resources/thumbnails/019/909/625/small/mcdonald-s-transparent-mcdonald-s-free-free-png.png" alt="Lassa" class="max-h-30 max-w-full object-contain grayscale opacity-70 group-hover:grayscale-0 group-hover:opacity-100 transition-all">
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<script>
+  const observer = new MutationObserver(() => {
+  const branding = document.querySelector('.sk_branding');
+  if (branding) {
+    branding.style.setProperty('display', 'none', 'important');
+  }
+});
+
+// Sayfaya yeni elemanlar eklendikçe kontrol eder
+observer.observe(document.body, { childList: true, subtree: true });
+</script>
+<script>
+    const tabSmm = document.getElementById('tab-smm');
+    const tabCekilis = document.getElementById('tab-cekilis');
+    const tabEnson = document.getElementById('tab-enson'); // Yeni tab
+    
+    const contentSmm = document.getElementById('smm-content');
+    const contentCekilis = document.getElementById('cekilis-content');
+    const contentEnson = document.getElementById('enson-content'); // Yeni kontent
+
+    // Butonların aktiv və passiv rəng sinifləri
+    const activeClasses = ['bg-[#ff4b01]', 'text-white'];
+    const inactiveClasses = ['bg-transparent', 'text-[#ff4b01]', 'hover:bg-[#ff4b01]/10'];
+
+    tabSmm.addEventListener('click', () => {
+        // Kontentləri dəyiş
+        contentSmm.classList.remove('hidden');
+        contentSmm.classList.add('block');
+        
+        contentCekilis.classList.remove('block');
+        contentCekilis.classList.add('hidden');
+        
+        contentEnson.classList.remove('block');
+        contentEnson.classList.add('hidden');
+        
+        // Butonları dəyiş
+        tabSmm.classList.remove(...inactiveClasses);
+        tabSmm.classList.add(...activeClasses);
+        
+        tabCekilis.classList.remove(...activeClasses);
+        tabCekilis.classList.add(...inactiveClasses);
+        
+        tabEnson.classList.remove(...activeClasses);
+        tabEnson.classList.add(...inactiveClasses);
+    });
+
+    tabCekilis.addEventListener('click', () => {
+        // Kontentləri dəyiş
+        contentCekilis.classList.remove('hidden');
+        contentCekilis.classList.add('block');
+        
+        contentSmm.classList.remove('block');
+        contentSmm.classList.add('hidden');
+        
+        contentEnson.classList.remove('block');
+        contentEnson.classList.add('hidden');
+        
+        // Butonları dəyiş
+        tabCekilis.classList.remove(...inactiveClasses);
+        tabCekilis.classList.add(...activeClasses);
+        
+        tabSmm.classList.remove(...activeClasses);
+        tabSmm.classList.add(...inactiveClasses);
+        
+        tabEnson.classList.remove(...activeClasses);
+        tabEnson.classList.add(...inactiveClasses);
+    });
+
+    // Ən Son İşlərimiz butonu üçün klik funksiyası
+    tabEnson.addEventListener('click', () => {
+        // Kontentləri dəyiş
+        contentEnson.classList.remove('hidden');
+        contentEnson.classList.add('block');
+        
+        contentSmm.classList.remove('block');
+        contentSmm.classList.add('hidden');
+        
+        contentCekilis.classList.remove('block');
+        contentCekilis.classList.add('hidden');
+        
+        // Butonları dəyiş
+        tabEnson.classList.remove(...inactiveClasses);
+        tabEnson.classList.add(...activeClasses);
+        
+        tabSmm.classList.remove(...activeClasses);
+        tabSmm.classList.add(...inactiveClasses);
+        
+        tabCekilis.classList.remove(...activeClasses);
+        tabCekilis.classList.add(...inactiveClasses);
+    });
+</script>
+
+
+<script>// Video Modal Elementləri
+const videoModal = document.getElementById('video-modal');
+const modalVideo = document.getElementById('modal-video');
+const modalVideoContainer = document.getElementById('modal-video-container');
+const modalVideoSource = document.getElementById('modal-video-source');
+
+// Modalı Açan Funksiya
+function openVideoModal(videoUrl) {
+    modalVideoSource.src = videoUrl;
+    modalVideo.load();
+    
+    // Ekranda göstər və böyümə animasiyasını tetiklə
+    videoModal.classList.remove('hidden');
+    setTimeout(() => {
+        videoModal.classList.remove('opacity-0');
+        modalVideoContainer.classList.remove('scale-95');
+        modalVideoContainer.classList.add('scale-100');
+    }, 10); // Qısa gecikmə CSS transition üçün mütləqdir
+
+    // Səsli formatda avtomatik başlat
+    modalVideo.volume = 1.0;
+    modalVideo.play();
+}
+
+// Modalı Bağlayan Funksiya (İstənilən yerə basıldıqda işləyir)
+function closeVideoModal() {
+    // Animasiya ilə kiçilt
+    videoModal.classList.add('opacity-0');
+    modalVideoContainer.classList.remove('scale-100');
+    modalVideoContainer.classList.add('scale-95');
+    
+    // Animasiya bitdikdən sonra tamamilə gizlət və videonu sıfırla
+    setTimeout(() => {
+        videoModal.classList.add('hidden');
+        modalVideo.pause();
+        modalVideo.currentTime = 0;
+        modalVideoSource.src = "";
+    }, 300); // Tailwind duration-300 klası ilə eyni müddət
+}</script>
+
+
+<script>
+  function flyAway(el) {
+    // 1. Animasyonu başlat (uçur ve şeffaflaştır)
+    el.classList.add('translate-x-[1000px]', '-translate-y-[1000px]', 'opacity-0', 'pointer-events-none');
+
+    // 2. Animasyon (transition) bittiği an 'hidden' sınıfını ekle
+    el.addEventListener('transitionend', () => {
+      el.classList.add('hidden');
+    }, { once: true }); // { once: true } listener'ın sadece 1 kere çalışmasını sağlar
+  }
+</script>
+    <script>
+        const menuBtn = document.getElementById('menu-btn');
+const menu = document.getElementById('menu');
+const menuIcon = document.getElementById('menu-icon');
+
+menuBtn.addEventListener('click', () => {
+    // Menyu acıqdırsa bağlayır, bağlıdırsa açır
+    const isOpen = menu.classList.contains('max-h-96');
+
+    if (isOpen) {
+        menu.classList.remove('max-h-96', 'opacity-100', 'py-6');
+        menu.classList.add('max-h-0', 'opacity-0');
+        
+        // İkonu 'xmark'-dan 'bars'-a keçirir
+        menuIcon.classList.remove('fa-xmark');
+        menuIcon.classList.add('fa-bars');
+    } else {
+        menu.classList.remove('max-h-0', 'opacity-0');
+        menu.classList.add('max-h-96', 'opacity-100', 'py-6');
+        
+        // İkonu 'bars'-dan 'xmark'-a keçirir
+        menuIcon.classList.remove('fa-bars');
+        menuIcon.classList.add('fa-xmark');
+    }
+});
+    </script>
+</body>
+</html>

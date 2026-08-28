@@ -1,0 +1,54 @@
+        :root {
+                --primary: #ff4b01;
+                --secondary: #161819;
+                --black: #101010;
+                --cyan: #00E5FF; 
+        }
+
+        .bg-secondary-custom {
+      background-color: var(--secondary);
+    }
+    .text-primary-custom {
+      color: var(--primary);
+    }
+
+    /* instagram widget */
+
+    /* Widget-in ümumi kənar boşluqlarını (padding) 4px edirik */
+.sk-instagram-feed, 
+.sk-ww-ig-feed-container {
+    padding: 4px !important;
+}
+
+@media (max-width: 768px) {
+    /* Grid konteynerini 3 sütunlu edirik */
+    .sk-ig-all-posts {
+        display: grid !important;
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 4px !important;
+        justify-content: center !important;
+    }
+
+    /* Hər bir post elementini 3x4 proporsiyasına salırıq */
+    .sk-ig-all-posts .sk-instagram-feed-item {
+        width: 100% !important;
+        height: auto !important;
+        aspect-ratio: 3 / 4 !important; /* 3x4 görünüş üçün dəyişdirildi */
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        overflow: hidden !important;
+    }
+
+    /* Şəkil və videoların qutunun içinə tam yerləşməsini təmin edirik */
+    .sk-ig-all-posts .sk-instagram-feed-item img,
+    .sk-ig-all-posts .sk-instagram-feed-item video {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover !important;
+        object-position: center !important;
+    }
+}
+.tutorial-link {
+  display: none !important;
+}
