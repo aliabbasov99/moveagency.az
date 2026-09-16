@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react"
+import type { JSX } from "react"
 
 type AnimateBy = "letters" | "words" | "lines"
 type Direction = "top" | "bottom"

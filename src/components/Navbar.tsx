@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Menu, X, ChevronDown, Phone } from "lucide-react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFacebookF, faInstagram } from "@fortawesome/free-brands-svg-icons";
@@ -17,8 +17,8 @@ const Navbar = () => {
   const [logoMoving, setLogoMoving] = useState(false);
   const [animationTarget, setAnimationTarget] = useState({ x: 0, y: 0, width: 280 });
 
-  const logoRef = useRef(null);
-  const langDropdownRef = useRef(null);
+  const logoRef = useRef<HTMLImageElement>(null);
+  const langDropdownRef = useRef<HTMLDivElement>(null);
 
   const languages = [{ code: "AZ" }, { code: "EN" }, { code: "RU" }];
 
@@ -26,7 +26,8 @@ const Navbar = () => {
   // LOADING & ANIMATION LOGIC
   // -----------------------------------------
   useEffect(() => {
-    let timeout1, timeout2;
+    let timeout1: ReturnType<typeof setTimeout> | undefined;
+    let timeout2: ReturnType<typeof setTimeout> | undefined;
 
     const interval = setInterval(() => {
       setProgress((prev) => {
@@ -75,10 +76,10 @@ const Navbar = () => {
   // LANGUAGE OUTSIDE CLICK
   // -----------------------------------------
   useEffect(() => {
-    const handleClickOutside = (event) => {
+    const handleClickOutside = (event: MouseEvent) => {
       if (
         langDropdownRef.current &&
-        !langDropdownRef.current.contains(event.target)
+        !langDropdownRef.current.contains(event.target as Node)
       ) {
         setLangOpen(false);
       }
@@ -104,7 +105,7 @@ const Navbar = () => {
   const navLinkClass =
     "relative inline-block text-[#eee] font-medium font-playfair uppercase tracking-wider group cursor-pointer";
 
-  const renderNavLink = (text, href) => (
+  const renderNavLink = (text: string, href: string) => (
     <a href={href} className={navLinkClass}>
       <span>{text}</span>
       <span

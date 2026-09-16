@@ -1,4 +1,3 @@
-import React from 'react';
 import { MapPin, Phone, Mail } from 'lucide-react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFacebookF, faInstagram } from '@fortawesome/free-brands-svg-icons';
@@ -35,7 +34,7 @@ const Footer = () => {
     const navLinkClass =
         'relative inline-block text-[#0B132B]/70 font-normal font-playfair uppercase tracking-wider group cursor-pointer';
 
-    const renderNavLink = ({ href, label }) => (
+    const renderNavLink = ({ href, label }: { href: string; label: string }) => (
         <a key={href} href={href} className={navLinkClass}>
             <span>{label}</span>
             <span className="absolute top-0 left-0 overflow-hidden text-[#0B132B] max-w-0 opacity-0 group-hover:max-w-full group-hover:opacity-100 transition-all duration-500 ease-in-out whitespace-nowrap">
