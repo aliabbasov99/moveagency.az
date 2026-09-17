@@ -3,7 +3,7 @@ import BlurText from "./BlurText";
 import { Snowflake, Flower, Sun, Leaf, ChevronLeft, ChevronRight } from "lucide-react";
 
 // Yerli video fayllarını import edirik
-import heroVideo from "../assets/video/hero_video_bg.mp4";
+import heroVideo from "../assets/video/marketing_horizontonal.mp4";
 import socialVideo from "../assets/video/social_media_strategy.mp4";
 
 interface SeasonItem {

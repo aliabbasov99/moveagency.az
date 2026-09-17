@@ -168,10 +168,8 @@ const Navbar = () => {
                         {/* BOTTOM LOADING BAR */}
                         <div className="absolute bottom-8 left-6 right-6">
                             <div className="flex items-end justify-between mb-3 text-white">
-                                <span className="text-xs tracking-[0.3em] uppercase">
-                                    Move Agency
-                                </span>
-                                <span className="text-sm font-mono">{progress}%</span>
+                                <span className="text-sm self-end font-mono"></span>
+                                <span className="text-sm self-end font-mono">{progress}%</span>
                             </div>
 
                             <div className="w-full h-[1px] bg-white/20 overflow-hidden">
