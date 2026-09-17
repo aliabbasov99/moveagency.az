@@ -17,113 +17,37 @@
   --color-brand-brown: #5A3520;
   --color-brand-light: #F5F0E8;
 }
-
 html {
-  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(201, 168, 108, 0.5) transparent;
+  -ms-overflow-style: auto;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(201, 168, 108, 0.5);
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(201, 168, 108, 0.8);
 }
 
 body {
-  font-family: var(--font-inter);
-  color: var(--color-brand-dark);
-  background-color: var(--color-brand-cream);
   overflow-x: hidden;
 }
 
-.srOnly {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border-width: 0;
-}
-
-.container {
-  width: 100%;
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 0 24px;
-}
-
-@media (min-width: 768px) {
-  .container {
-    padding: 0 48px;
-  }
-}
-
-@media (min-width: 1280px) {
-  .container {
-    padding: 0 80px;
-  }
-}
-
-/* Swiper overrides */
-.swiper-pagination-bullet {
-  background: var(--color-brand-dark) !important;
-  opacity: 0.3 !important;
-}
-.swiper-pagination-bullet-active {
-  opacity: 1 !important;
-}
-
-/* Scroll reveal animations */
-.reveal-up {
-  opacity: 0;
-  transform: translateY(40px);
-  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.reveal-up.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.reveal-fade {
-  opacity: 0;
-  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.reveal-fade.visible {
-  opacity: 1;
-}
-
-.reveal-scale {
-  opacity: 0;
-  transform: scale(0.95);
-  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.reveal-scale.visible {
-  opacity: 1;
-  transform: scale(1);
-}
-
-/* Letter animation */
-@keyframes letterReveal {
-  0% {
-    opacity: 0;
-    transform: translateY(100%);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Line reveal */
-@keyframes lineReveal {
-  0% {
-    opacity: 0;
-    transform: translateY(120%);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Waveform animation */
-@keyframes waveformPulse {
-  0%, 100% { transform: scaleY(0.3); }
-  50% { transform: scaleY(1); }
+#home,
+#about,
+#services,
+#portfolio,
+#contact {
+  scroll-margin-top: 100px;
 }

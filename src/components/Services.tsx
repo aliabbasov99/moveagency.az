@@ -58,7 +58,7 @@ export default function SeasonsSection() {
   };
 
   return (
-    <section className="relative w-full h-screen  text-black overflow-hidden flex flex-col justify-between py-6">
+    <section id="services" className="relative w-full h-screen  text-black overflow-hidden flex flex-col justify-between py-6">
       
       {/* Yuxarı Başlıq Hissəsi */}
       <div className="relative z-20 max-w-4xl mx-auto text-center px-4 shrink-0">

@@ -56,7 +56,7 @@ export default function ArchitectureSection() {
     const currentSlide = slidesData[currentIndex];
 
     return (
-        <section className="relative w-full min-h-screen bg-[#f7f4ef] text-[#2c221e] py-16 px-6 md:px-16 flex items-center overflow-hidden">
+        <section id="portfolio" className="relative w-full min-h-screen bg-[#f7f4ef] text-[#2c221e] py-16 px-6 md:px-16 flex items-center overflow-hidden">
 
             <div className="max-w-[1400px] mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
 

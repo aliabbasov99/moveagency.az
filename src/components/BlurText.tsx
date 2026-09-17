@@ -43,7 +43,8 @@ const BlurText: React.FC<BlurTextProps> = ({
   onAnimationComplete,
   stepDuration = 0.35
 }) => {
-  const elements = animateBy === 'words' ? text.split(' ') : text.split('');
+  const words = text.split(' ');
+  const elements = animateBy === 'words' ? words : text.split('');
   const [inView, setInView] = useState(false);
   const ref = useRef<HTMLParagraphElement>(null);
 
@@ -94,6 +95,52 @@ const BlurText: React.FC<BlurTextProps> = ({
   const stepCount = toSnapshots.length + 1;
   const totalDuration = stepDuration * (stepCount - 1);
   const times = Array.from({ length: stepCount }, (_, i) => (stepCount === 1 ? 0 : i / (stepCount - 1)));
+
+  const renderLetter = (segment: string, index: number, isLast: boolean) => {
+    const animateKeyframes = buildKeyframes(fromSnapshot, toSnapshots);
+
+    const spanTransition: Transition = {
+      duration: totalDuration,
+      times,
+      delay: (index * delay) / 1000,
+      ease: easing
+    };
+
+    return (
+      <motion.span
+        key={index}
+        initial={fromSnapshot}
+        animate={inView ? animateKeyframes : fromSnapshot}
+        transition={spanTransition}
+        onAnimationComplete={isLast ? onAnimationComplete : undefined}
+        style={{
+          display: 'inline-block',
+          willChange: 'transform, filter, opacity'
+        }}
+      >
+        {segment === ' ' ? '\u00A0' : segment}
+      </motion.span>
+    );
+  };
+
+  if (animateBy === 'letters') {
+    let letterIndex = -1;
+
+    return (
+      <p ref={ref} className={`blur-text ${className} flex flex-wrap`}>
+        {words.map((word, wordIndex) => (
+          <span key={wordIndex} style={{ display: 'inline-flex', whiteSpace: 'nowrap' }}>
+            {word.split('').map((letter) => {
+              letterIndex += 1;
+              return renderLetter(letter, letterIndex, letterIndex === text.length - 1);
+            })}
+            {wordIndex < words.length - 1 &&
+              renderLetter(' ', (letterIndex += 1), letterIndex === text.length - 1)}
+          </span>
+        ))}
+      </p>
+    );
+  }
 
   return (
     <p ref={ref} className={`blur-text ${className} flex flex-wrap`}>

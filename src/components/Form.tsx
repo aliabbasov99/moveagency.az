@@ -15,7 +15,7 @@ export default function ProjectContactForm() {
   };
 
   return (
-    <div className="w-full flex items-center justify-center p-4 bg-[#f7f4ef]">
+    <div id="contact" className="w-full flex items-center justify-center p-4 bg-[#f7f4ef]">
       <div className="w-full max-w-xl bg-[#f7f4ef] border border-[#e6dec9] rounded-2xl p-8 md:p-12 shadow-sm">
         
         {/* Başlıq */}

@@ -14,7 +14,7 @@ const getInitialLogoWidth = () => {
     return 288;
 };
 
-const Navbar = () => {
+const Navbar = ({ onNavigate }: { onNavigate?: (target: number) => void }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [langOpen, setLangOpen] = useState(false);
     const [currentLang, setCurrentLang] = useState('AZ');
@@ -24,14 +24,11 @@ const Navbar = () => {
     const [progress, setProgress] = useState(0);
     const [logoMoving, setLogoMoving] = useState(false);
     const [animationTarget, setAnimationTarget] = useState({ x: 0, y: 0, width: getInitialLogoWidth() });
-    const [initialLogoWidth, setInitialLogoWidth] = useState(getInitialLogoWidth());
+    const [initialLogoWidth] = useState(getInitialLogoWidth);
 
-    const logoRef = useRef(null);
-    const langDropdownRef = useRef(null);
-
-    useEffect(() => {
-        setInitialLogoWidth(getInitialLogoWidth());
-    }, []);
+    const logoRef = useRef<HTMLImageElement | null>(null);
+    const langDropdownRef = useRef<HTMLDivElement | null>(null);
+    const headerRef = useRef<HTMLElement | null>(null);
 
     const languages = [
         { code: 'AZ' },
@@ -43,8 +40,8 @@ const Navbar = () => {
     // LOADING & ANIMATION LOGIC
     // -----------------------------------------
     useEffect(() => {
-        let timeout1;
-        let timeout2;
+        let timeout1: ReturnType<typeof setTimeout> | undefined;
+        let timeout2: ReturnType<typeof setTimeout> | undefined;
 
         const interval = setInterval(() => {
             setProgress((prev) => {
@@ -91,8 +88,8 @@ const Navbar = () => {
 
     // Dropdown xaricinə klikləndikdə menyuları bağlamaq üçün
     useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (langDropdownRef.current && !langDropdownRef.current.contains(event.target)) {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (langDropdownRef.current && event.target instanceof Node && !langDropdownRef.current.contains(event.target)) {
                 setLangOpen(false);
             }
         };
@@ -112,10 +109,21 @@ const Navbar = () => {
         };
     }, [isOpen]);
 
+    const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+        e.preventDefault();
+        const el = document.getElementById(href.replace('#', ''));
+        if (!el) return;
+        const rect = el.getBoundingClientRect();
+        const y = rect.top + window.scrollY + rect.height / 2 - window.innerHeight / 2;
+        const clamped = Math.max(0, Math.min(y, document.documentElement.scrollHeight - window.innerHeight));
+        onNavigate?.(clamped);
+        setIsOpen(false);
+    };
+
     const navLinkClass = "relative inline-block text-[#eee] font-medium font-playfair uppercase tracking-wider group cursor-pointer";
     
-    const renderNavLink = (href, text) => (
-        <a href={href} className={navLinkClass}>
+    const renderNavLink = (href: string, text: string) => (
+        <a href={href} onClick={(e) => handleNavClick(e, href)} className={navLinkClass}>
             <span>{text}</span>
             <span className="absolute top-0 left-0 overflow-hidden text-white max-w-0 opacity-0 group-hover:max-w-full group-hover:opacity-100 transition-all duration-500 ease-in-out whitespace-nowrap">
                 {text}
@@ -188,53 +196,52 @@ const Navbar = () => {
             {/* =========================================
                 NAVBAR
             ========================================= */}
-            <header className="text-white bg-gradient-to-b from-black/70 via-black/35 to-transparent fixed top-0 left-0 w-full z-50">            
-                <nav className="w-full mx-auto px-4 py-6 sm:px-6 lg:px-10 flex flex-row items-center justify-between">
+            <header ref={headerRef} className="text-white bg-gradient-to-b from-black/70 via-black/35 to-transparent fixed top-0 left-0 w-full z-50">            
+                <nav className="w-full mx-auto px-4 py-6 sm:px-6 lg:px-6 xl:px-10 flex flex-row items-center justify-between">
                     
                     {/* Logo */}
                     <div className="flex items-center">
-                        <a href="#home" className="block">
+                        <a href="#home" onClick={(e) => handleNavClick(e, '#home')} className="block">
                             <img 
                                 ref={logoRef} 
                                 src={logo} 
                                 alt="moveagency logo" 
-                                className="object-contain max-w-40 sm:max-w-52 lg:max-w-72" 
+                                className="object-contain max-w-40 sm:max-w-52 lg:max-w-44 xl:max-w-60 2xl:max-w-72" 
                             />
                         </a>
                     </div>
 
                     {/* Masaüstü Linkləri */}
-                    <div className="hidden lg:flex flex-row items-center justify-center flex-1 space-x-10 text-lg">
-                        {renderNavLink('#home', 'Ana Sayfa')}
-                        {renderNavLink('#services', 'Hizmetler')}
-                        {renderNavLink('#about', 'Hakkımızda')}
-                        {renderNavLink('#contact', 'İletişim')}
+                    <div className="hidden lg:flex flex-row items-center justify-center flex-1 space-x-4 text-sm xl:space-x-8 xl:text-base">
+                        {renderNavLink('#home', 'Ana Səhifə')}
+                        {renderNavLink('#about', 'Haqqımızda')}
+                        {renderNavLink('#services', 'Xidmətlərimiz')}
+                        {renderNavLink('#portfolio', 'Portfolio')}
+                        {renderNavLink('#contact', 'Əlaqə')}
                     </div>
 
                     {/* Masaüstü Sağ Tərəf: Buton + Dil Seçimi */}
-                    <div className="hidden lg:flex items-center space-x-5 font-montserrat">
+                    <div className="hidden lg:flex items-center space-x-3 font-montserrat xl:space-x-5">
                         <a 
                             href="#contact" 
-                            className="relative inline-flex items-center justify-center bg-white text-black font-medium px-6 py-3.5 rounded-[10px] shadow-lg overflow-hidden group cursor-pointer"
+                            onClick={(e) => handleNavClick(e, '#contact')} 
+                            className="relative inline-flex items-center justify-center gap-2 bg-white text-black font-medium px-4 py-2.5 text-sm rounded-[10px] shadow-lg overflow-hidden outline outline-1 outline-transparent hover:outline-black/20 transition-colors duration-500 ease-in-out group cursor-pointer xl:px-5 xl:py-3 xl:text-base"
                         >
-                            <span className="absolute inset-0 bg-black scale-x-0 group-hover:scale-x-100 origin-right transition-transform duration-500 ease-in-out z-0"></span>
-                            <div className="flex items-center gap-2 z-10">
-                                <Phone className="w-5 h-5 text-black" />
-                                <span>Əlaqə saxla</span>
-                            </div>
-                            <div className="absolute top-0 left-0 bottom-0 overflow-hidden max-w-0 opacity-0 group-hover:max-w-full group-hover:opacity-100 transition-all duration-500 ease-in-out whitespace-nowrap z-20 flex items-center px-6">
-                                <div className="flex items-center gap-2 text-white">
-                                    <Phone className="w-5 h-5 shrink-0" />
-                                    <span className="font-medium">Əlaqə saxla</span>
-                                </div>
-                            </div>
+                            <span className="absolute inset-0 bg-black scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-500 ease-in-out z-0"></span>
+                            <Phone className="w-4 h-4 z-10 text-black group-hover:text-white transition-colors duration-500 ease-in-out xl:w-5 xl:h-5" />
+                            <span className="relative z-10 whitespace-nowrap">
+                                <span className="text-black transition-opacity duration-500 ease-in-out group-hover:opacity-0">Əlaqə saxla</span>
+                                <span className="absolute inset-y-0 right-0 flex items-center justify-end overflow-hidden max-w-0 group-hover:max-w-full transition-all duration-500 ease-in-out">
+                                    <span className="text-white">Əlaqə saxla</span>
+                                </span>
+                            </span>
                         </a>
 
                         {/* Dil Seçimi (Dropdown) */}
                         <div className="relative font-montserrat" ref={langDropdownRef}>
                             <button 
                                 onClick={() => setLangOpen(!langOpen)}
-                                className="flex items-center space-x-1.5 text-white/90 hover:text-white px-2 py-2 transition-colors text-base font-normal cursor-pointer"
+                                className="flex items-center space-x-1.5 text-white/90 hover:text-white px-1.5 py-2 transition-colors text-sm font-normal cursor-pointer xl:px-2 xl:text-base"
                             >
                                 <span>{currentLang}</span>
                                 <ChevronDown size={18} className={`transition-transform duration-200 ${langOpen ? 'rotate-180' : ''}`} />
@@ -310,13 +317,13 @@ const Navbar = () => {
                         }`}
                         style={{ transitionDelay: isOpen ? '600ms' : '0ms' }}
                     >
-                        {['#home', '#services', '#about', '#contact'].map((href, index) => {
-                            const labels = ['Ana Sayfa', 'Hizmetler', 'Hakkımızda', 'İletişim'];
+                        {['#home', '#about', '#services', '#portfolio', '#contact'].map((href, index) => {
+                            const labels = ['Ana Səhifə', 'Haqqımızda', 'Xidmətlərimiz', 'Portfolio', 'Əlaqə'];
                             return (
                                 <a 
                                     key={href}
                                     href={href} 
-                                    onClick={() => setIsOpen(false)}
+                                    onClick={(e) => handleNavClick(e, href)}
                                     className="text-2xl sm:text-3xl font-normal text-black/80 hover:text-black tracking-wide transition-colors"
                                 >
                                     {labels[index]}

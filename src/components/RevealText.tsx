@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react"
-import type { JSX } from "react"
+import type { ElementType, JSX } from "react"
 
 type AnimateBy = "letters" | "words" | "lines"
 type Direction = "top" | "bottom"
@@ -120,7 +120,7 @@ export default function RevealText({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible])
 
-  const Wrapper = as as any
+  const Wrapper = (as ?? "span") as ElementType
 
   return (
     <Wrapper
