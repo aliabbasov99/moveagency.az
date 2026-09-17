@@ -2,7 +2,7 @@ import BlurText from "./BlurText"
 
 const Title = () => {
     return (
-        <section id="about" className="flex h-[550px] w-full items-center justify-center bg-[#fdfbf1] px-4">
+        <section className="flex h-[550px] w-full items-center justify-center bg-[#fdfbf1] px-4">
             <BlurText
                 text="We move brands forward"
                 delay={20}

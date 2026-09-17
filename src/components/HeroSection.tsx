@@ -184,7 +184,7 @@ export default function HeroSection({
   }, [playing])
 
   return (
-    <section className="grid min-h-[620px] w-full grid-cols-1 items-stretch bg-[#fdfbf1] lg:grid-cols-2 overflow-hidden">
+    <section id="about" className="grid min-h-[620px] w-full grid-cols-1 items-stretch bg-[#fdfbf1] lg:grid-cols-2 overflow-hidden">
       {/* Text column */}
       <div className="flex flex-col justify-center px-4 py-10 sm:px-6 sm:py-14 lg:px-10 lg:py-16 xl:px-20">
         <h1 className="max-w-xl font-serif text-4xl leading-tight text-[#2a1a14] md:text-5xl">

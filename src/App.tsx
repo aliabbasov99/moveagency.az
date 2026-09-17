@@ -27,7 +27,7 @@ const App = () => {
       <StatsSection />
       <SEO />
       <Form />
-      <Footer />
+      <Footer onNavigate={scrollTo} />
     </>
   )
 }

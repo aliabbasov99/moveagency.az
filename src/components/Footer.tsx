@@ -1,16 +1,16 @@
 import { MapPin, Phone, Mail } from 'lucide-react';
+import type { MouseEvent } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFacebookF, faInstagram } from '@fortawesome/free-brands-svg-icons';
 import logo from '../assets/img/static/ma_logo.webp'; // Açıq fon üçün tünd logo variantı
 import BlurText from './BlurText';
 
-const Footer = () => {
+const Footer = ({ onNavigate }: { onNavigate?: (target: number) => void }) => {
     const navLinks = [
-        { href: '#about', label: 'Layihə haqqında' },
-        { href: '#location', label: 'Yerləşmə' },
-        { href: '#architecture', label: 'Arxitektura' },
-        { href: '#investment', label: 'İnvestisiya' },
-        { href: '#gallery', label: 'Qalereya' },
+        { href: '#home', label: 'Ana Səhifə' },
+        { href: '#about', label: 'Haqqımızda' },
+        { href: '#services', label: 'Xidmətlərimiz' },
+        { href: '#portfolio', label: 'Portfolio' },
         { href: '#contact', label: 'Əlaqə' },
     ];
 
@@ -26,16 +26,26 @@ const Footer = () => {
     ];
 
     const socials = [
-        { icon: faFacebookF, href: 'https://facebook.com', label: 'Facebook' },
-        { icon: faInstagram, href: 'https://instagram.com', label: 'Instagram' },
+        { icon: faFacebookF, href: 'https://facebook.com/moveagency.az', label: 'Facebook' },
+        { icon: faInstagram, href: 'https://instagram.com/moveagency.az', label: 'Instagram' },
     ];
 
     // Navbar-dakı hover effektinin açıq fon üçün uyğunlaşdırılmış variantı
     const navLinkClass =
         'relative inline-block text-[#0B132B]/70 font-normal font-playfair uppercase tracking-wider group cursor-pointer';
 
+    const handleNavClick = (e: MouseEvent<HTMLAnchorElement>, href: string) => {
+        e.preventDefault();
+        const el = document.getElementById(href.replace('#', ''));
+        if (!el) return;
+        const rect = el.getBoundingClientRect();
+        const y = rect.top + window.scrollY + rect.height / 2 - window.innerHeight / 2;
+        const clamped = Math.max(0, Math.min(y, document.documentElement.scrollHeight - window.innerHeight));
+        onNavigate?.(clamped);
+    };
+
     const renderNavLink = ({ href, label }: { href: string; label: string }) => (
-        <a key={href} href={href} className={navLinkClass}>
+        <a key={href} href={href} onClick={(e) => handleNavClick(e, href)} className={navLinkClass}>
             <span>{label}</span>
             <span className="absolute top-0 left-0 overflow-hidden text-[#0B132B] max-w-0 opacity-0 group-hover:max-w-full group-hover:opacity-100 transition-all duration-500 ease-in-out whitespace-nowrap">
                 {label}
@@ -139,14 +149,14 @@ const Footer = () => {
                     </div>
 
                     <a
-                        href="https://onestudio.az"
+                        href="https://promar.az"
                         target="_blank"
                         rel="noreferrer"
                         className="group flex items-center gap-2 text-xs sm:text-sm"
                     >
                         <span className="text-[10px] sm:text-xs text-[#0B132B]/45">Saytın hazırlanması</span>
                         <span className="font-semibold text-[#0B132B] group-hover:underline underline-offset-4">
-                            ONE studio
+                            Promar
                         </span>
                     </a>
                 </div>

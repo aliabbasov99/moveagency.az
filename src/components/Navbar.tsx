@@ -382,10 +382,10 @@ const Navbar = ({ onNavigate }: { onNavigate?: (target: number) => void }) => {
                             </a>
 
                             <div className="flex items-center space-x-3">
-                                <a href="https://facebook.com" target="_blank" rel="noreferrer" className="w-10 h-10 flex items-center justify-center border border-black/20 rounded-xl hover:bg-black hover:text-white transition-colors">
+                                <a href="https://facebook.com/moveagency.az" target="_blank" rel="noreferrer" className="w-10 h-10 flex items-center justify-center border border-black/20 rounded-xl hover:bg-black hover:text-white transition-colors">
                                     <FontAwesomeIcon icon={faFacebookF} className="w-4 h-4" />
                                 </a>
-                                <a href="https://instagram.com" target="_blank" rel="noreferrer" className="w-10 h-10 flex items-center justify-center border border-black/20 rounded-xl hover:bg-black hover:text-white transition-colors">
+                                <a href="https://instagram.com/moveagency.az" target="_blank" rel="noreferrer" className="w-10 h-10 flex items-center justify-center border border-black/20 rounded-xl hover:bg-black hover:text-white transition-colors">
                                     <FontAwesomeIcon icon={faInstagram} className="w-4 h-4" />
                                 </a>
                             </div>
