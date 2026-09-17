@@ -46,7 +46,6 @@ const BlurText: React.FC<BlurTextProps> = ({
   const elements = animateBy === 'words' ? text.split(' ') : text.split('');
   const [inView, setInView] = useState(false);
   const ref = useRef<HTMLParagraphElement>(null);
-  const lastScrollY = useRef(0);
 
   useEffect(() => {
     const element = ref.current;
@@ -54,18 +53,13 @@ const BlurText: React.FC<BlurTextProps> = ({
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        const currentScrollY = window.scrollY;
-        // Yalnız aşağı doğru hərəkət edərkən (scroll aşağı) və element ekrana daxil olanda animasiyanı işə salırıq
-        const isScrollingDown = currentScrollY > lastScrollY.current;
-
-        if (entry.isIntersecting && isScrollingDown) {
+        // Element ekrana hansı istiqamətdən daxil olursa olsun (aşağı və ya yuxarı scroll) animasiyanı işə salırıq
+        if (entry.isIntersecting) {
           setInView(false); // Qısa müddətə sıfırlayırıq ki, keyframes yenidən başlasın
           setTimeout(() => setInView(true), 50);
-        } else if (!entry.isIntersecting) {
+        } else {
           setInView(false); // Ekrandan çıxanda sıfırlayırıq
         }
-
-        lastScrollY.current = currentScrollY;
       },
       { threshold, rootMargin }
     );
