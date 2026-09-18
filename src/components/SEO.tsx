@@ -1,8 +1,10 @@
 import { useEffect, useState, useRef } from "react";
 import BlurText from "./BlurText";
-import logo from "../assets/img/static/ma_logo.webp"; // Logonun yolu
-
+import { useLocale } from "../locales/useLocale";
+import logo from "../assets/img/static/ma_logo.webp";
+import SEOBg from  "../assets/img/static/footer_bg.jpeg"
 export default function ProjectStickyHero() {
+  const { dict } = useLocale();
   const sectionRef = useRef<HTMLDivElement>(null);
   const [progress, setProgress] = useState(0);
 
@@ -48,7 +50,7 @@ export default function ProjectStickyHero() {
 
     <div className="z-20 text-center px-4 max-w-3xl">
       <BlurText
-        text="Layihə regionun kurort tipli daşınmaz əmlak sahəsində ən böyük developerlərdən biri olan, yaşayış, istirahət və investisiya üçün müasir məkanların formalaşdırılmasında 20 illik təcrübəyə malik Sea Breeze tərəfindən həyata keçirilir."
+        text={dict.seo.text}
         animateBy="words"
         direction="bottom"
         delay={10}
@@ -63,8 +65,8 @@ export default function ProjectStickyHero() {
         style={{ clipPath: clipPathValue, WebkitClipPath: clipPathValue }}
       >
         <img
-          src="https://images.unsplash.com/photo-1543968996-ee822b8176ba?q=80&w=1600&auto=format&fit=crop"
-          alt="Sea Breeze Project"
+          src={SEOBg}
+          alt=""
           className="w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-black/30" />
@@ -78,7 +80,7 @@ export default function ProjectStickyHero() {
         >
           <img
             src={logo}
-            alt="Logo"
+            alt={dict.seo.logoAlt}
             className="w-45 md:w-80 object-contain drop-shadow-2xl invert"
           />
         </div>

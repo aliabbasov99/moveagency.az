@@ -1,0 +1,13 @@
+{
+  "trailingSlash": false,
+  "rewrites": [
+    { "source": "/en", "destination": "/en/index.html" },
+    { "source": "/ru", "destination": "/ru/index.html" },
+    { "source": "/mexfilik-siyaseti", "destination": "/mexfilik-siyaseti/index.html" },
+    { "source": "/istifade-sertleri", "destination": "/istifade-sertleri/index.html" },
+    { "source": "/en/mexfilik-siyaseti", "destination": "/en/mexfilik-siyaseti/index.html" },
+    { "source": "/en/istifade-sertleri", "destination": "/en/istifade-sertleri/index.html" },
+    { "source": "/ru/mexfilik-siyaseti", "destination": "/ru/mexfilik-siyaseti/index.html" },
+    { "source": "/ru/istifade-sertleri", "destination": "/ru/istifade-sertleri/index.html" }
+  ]
+}

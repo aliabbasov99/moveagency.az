@@ -1,33 +1,32 @@
-import { MapPin, Phone, Mail } from 'lucide-react';
+import { Phone, Mail } from 'lucide-react';
 import type { MouseEvent } from 'react';
+import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFacebookF, faInstagram } from '@fortawesome/free-brands-svg-icons';
-import logo from '../assets/img/static/ma_logo.webp'; // Açıq fon üçün tünd logo variantı
+import { faYoutube, faInstagram } from '@fortawesome/free-brands-svg-icons';
+import logo from '../assets/img/static/ma_logo.webp';
 import BlurText from './BlurText';
+import { useLocale } from '../locales/useLocale';
+import { getLocalizedPath } from '../locales/index';
 
 const Footer = ({ onNavigate }: { onNavigate?: (target: number) => void }) => {
+    const { locale, dict } = useLocale();
+
     const navLinks = [
-        { href: '#home', label: 'Ana Səhifə' },
-        { href: '#about', label: 'Haqqımızda' },
-        { href: '#services', label: 'Xidmətlərimiz' },
-        { href: '#portfolio', label: 'Portfolio' },
-        { href: '#contact', label: 'Əlaqə' },
+        { href: '#home', label: dict.navbar.home },
+        { href: '#about', label: dict.navbar.about },
+        { href: '#services', label: dict.navbar.services },
+        { href: '#portfolio', label: dict.navbar.portfolio },
+        { href: '#contact', label: dict.navbar.contact },
     ];
 
     const contacts = [
-        {
-            icon: MapPin,
-            label: 'Şahdağ dağ kurortu, Azərbaycan',
-            href: 'https://maps.google.com/?q=Shahdag+Mountain+Resort',
-            external: true,
-        },
-        { icon: Phone, label: '*8400', href: 'tel:*8400' },
-        { icon: Mail, label: 'info@skybreeze.az', href: 'mailto:info@skybreeze.az' },
+        { icon: Phone, label: '+994 55 924 25 62', href: 'tel:+994559242562' },
+        { icon: Mail, label: 'moveagencyy@gmail.com', href: 'mailto:moveagencyy@gmail.com' },
     ];
 
     const socials = [
-        { icon: faFacebookF, href: 'https://facebook.com/moveagency.az', label: 'Facebook' },
-        { icon: faInstagram, href: 'https://instagram.com/moveagency.az', label: 'Instagram' },
+        { icon: faYoutube, href: 'https://www.youtube.com/@MoveAgencyy', label: 'YouTube' },
+        { icon: faInstagram, href: 'https://www.instagram.com/moveagency.az', label: 'Instagram' },
     ];
 
     // Navbar-dakı hover effektinin açıq fon üçün uyğunlaşdırılmış variantı
@@ -59,10 +58,10 @@ const Footer = ({ onNavigate }: { onNavigate?: (target: number) => void }) => {
 
                 {/* Logo */}
                 <div className="flex items-center justify-center">
-                    <a href="#home" aria-label="Sky Breeze Shahdag">
+                    <a href="#home" aria-label={dict.navbar.logoAlt}>
                         <img
                             src={logo}
-                            alt="Sky Breeze Shahdag"
+                            alt={dict.navbar.logoAlt}
                             className="object-contain max-w-44 sm:max-w-52 lg:max-w-60"
                         />
                     </a>
@@ -80,11 +79,10 @@ const Footer = ({ onNavigate }: { onNavigate?: (target: number) => void }) => {
                 <div className="py-8 lg:py-6 flex flex-col items-center gap-6 lg:flex-row lg:justify-between lg:gap-10 font-montserrat">
 
                     <div className="flex flex-col items-center gap-4 sm:gap-5 lg:flex-row lg:gap-10 xl:gap-16">
-                        {contacts.map(({ icon: Icon, label, href, external }) => (
+                        {contacts.map(({ icon: Icon, label, href }) => (
                             <a
                                 key={label}
                                 href={href}
-                                {...(external ? { target: '_blank', rel: 'noreferrer' } : {})}
                                 className="group flex items-center gap-3 text-sm sm:text-base text-[#0B132B]/85 hover:text-[#0B132B] transition-colors"
                             >
                                 <Icon
@@ -126,26 +124,26 @@ const Footer = ({ onNavigate }: { onNavigate?: (target: number) => void }) => {
                 {/* Alt hissə */}
                 <div className="pt-6 flex flex-col items-center gap-4 lg:flex-row lg:justify-between font-montserrat">
                     <div className="flex items-center gap-6 text-xs sm:text-sm text-[#0B132B]/70">
-                        <a href="/mexfilik-siyaseti" className="hover:text-[#0B132B] transition-colors">
+                        <Link to={getLocalizedPath(locale, '/mexfilik-siyaseti')} className="hover:text-[#0B132B] transition-colors">
                             <BlurText 
-                                text="Məxfilik siyasəti" 
+                                text={dict.footer.privacyPolicy} 
                                 animateBy="words" 
                                 direction="bottom" 
                                 threshold={0.0} 
                                 stepDuration={0.25}
                                 delay={100}
                             />
-                        </a>
-                        <a href="/istifade-sertleri" className="hover:text-[#0B132B] transition-colors">
+                        </Link>
+                        <Link to={getLocalizedPath(locale, '/istifade-sertleri')} className="hover:text-[#0B132B] transition-colors">
                             <BlurText 
-                                text="İstifadə şərtləri" 
+                                text={dict.footer.termsOfUse} 
                                 animateBy="words" 
                                 direction="bottom" 
                                 threshold={0.0} 
                                 stepDuration={0.25}
                                 delay={100}
                             />
-                        </a>
+                        </Link>
                     </div>
 
                     <a
@@ -154,7 +152,7 @@ const Footer = ({ onNavigate }: { onNavigate?: (target: number) => void }) => {
                         rel="noreferrer"
                         className="group flex items-center gap-2 text-xs sm:text-sm"
                     >
-                        <span className="text-[10px] sm:text-xs text-[#0B132B]/45">Saytın hazırlanması</span>
+                        <span className="text-[10px] sm:text-xs text-[#0B132B]/45">{dict.footer.siteBuilder}</span>
                         <span className="font-semibold text-[#0B132B] group-hover:underline underline-offset-4">
                             Promar
                         </span>

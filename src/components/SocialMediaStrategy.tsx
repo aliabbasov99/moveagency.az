@@ -1,4 +1,4 @@
-import socialMediaVideo from "../assets/video/social_media_strategy.mp4"
+const socialMediaVideo = "https://res.cloudinary.com/ta8jgr46/video/upload/v1789738052/social_media_strategy_online-video-cutter.com.mp4"
 
 const SocialMediaStrategy = () => {
   return (

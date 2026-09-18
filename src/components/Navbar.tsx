@@ -1,11 +1,14 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, ChevronDown, Phone } from 'lucide-react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFacebookF, faInstagram } from '@fortawesome/free-brands-svg-icons';
+import { faYoutube, faInstagram } from '@fortawesome/free-brands-svg-icons';
 import { motion, AnimatePresence } from 'framer-motion';
-import logo from '../assets/img/static/ma_logo.webp'; // Logonun yolu
+import logo from '../assets/img/static/ma_logo.webp';
+import { useLocale } from '../locales/useLocale';
+import { getLocalizedPath } from '../locales/index';
+import type { Locale } from '../locales/index';
 
-// Navbar-dakı logonun tailwind breakpoint-lərinə uyğun ilkin en (max-w-40 / sm:max-w-52 / lg:max-w-72)
 const getInitialLogoWidth = () => {
     if (typeof window === 'undefined') return 288;
     const w = window.innerWidth;
@@ -15,9 +18,10 @@ const getInitialLogoWidth = () => {
 };
 
 const Navbar = ({ onNavigate }: { onNavigate?: (target: number) => void }) => {
+    const { locale, dict } = useLocale();
+    const location = useLocation();
     const [isOpen, setIsOpen] = useState(false);
     const [langOpen, setLangOpen] = useState(false);
-    const [currentLang, setCurrentLang] = useState('AZ');
 
     // PRELOADER STATE
     const [loading, setLoading] = useState(true);
@@ -30,10 +34,10 @@ const Navbar = ({ onNavigate }: { onNavigate?: (target: number) => void }) => {
     const langDropdownRef = useRef<HTMLDivElement | null>(null);
     const headerRef = useRef<HTMLElement | null>(null);
 
-    const languages = [
-        { code: 'AZ' },
-        { code: 'EN' },
-        { code: 'RU' },
+    const languages: { code: Locale; label: string }[] = [
+        { code: 'az', label: 'AZ' },
+        { code: 'en', label: 'EN' },
+        { code: 'ru', label: 'RU' },
     ];
 
     // -----------------------------------------
@@ -147,7 +151,7 @@ const Navbar = ({ onNavigate }: { onNavigate?: (target: number) => void }) => {
                         {/* CENTER LOGO */}
                         <motion.img
                             src={logo}
-                            alt="moveagency logo"
+                            alt={dict.navbar.logoAlt}
                             className="fixed left-1/2 top-1/2 object-contain pointer-events-none"
                             initial={{
                                 x: "-50%",
@@ -205,7 +209,7 @@ const Navbar = ({ onNavigate }: { onNavigate?: (target: number) => void }) => {
                             <img 
                                 ref={logoRef} 
                                 src={logo} 
-                                alt="moveagency logo" 
+                                alt={dict.navbar.logoAlt}
                                 className="object-contain max-w-40 sm:max-w-52 lg:max-w-44 xl:max-w-60 2xl:max-w-72" 
                             />
                         </a>
@@ -213,26 +217,27 @@ const Navbar = ({ onNavigate }: { onNavigate?: (target: number) => void }) => {
 
                     {/* Masaüstü Linkləri */}
                     <div className="hidden lg:flex flex-row items-center justify-center flex-1 space-x-4 text-sm xl:space-x-8 xl:text-base">
-                        {renderNavLink('#home', 'Ana Səhifə')}
-                        {renderNavLink('#about', 'Haqqımızda')}
-                        {renderNavLink('#services', 'Xidmətlərimiz')}
-                        {renderNavLink('#portfolio', 'Portfolio')}
-                        {renderNavLink('#contact', 'Əlaqə')}
+                        {renderNavLink('#home', dict.navbar.home)}
+                        {renderNavLink('#about', dict.navbar.about)}
+                        {renderNavLink('#services', dict.navbar.services)}
+                        {renderNavLink('#portfolio', dict.navbar.portfolio)}
+                        {renderNavLink('#contact', dict.navbar.contact)}
                     </div>
 
                     {/* Masaüstü Sağ Tərəf: Buton + Dil Seçimi */}
                     <div className="hidden lg:flex items-center space-x-3 font-montserrat xl:space-x-5">
                         <a 
-                            href="#contact" 
-                            onClick={(e) => handleNavClick(e, '#contact')} 
+                            href="https://wa.me/994559242562" 
+                            target="_blank"
+                            rel="noreferrer"
                             className="relative inline-flex items-center justify-center gap-2 bg-white text-black font-medium px-4 py-2.5 text-sm rounded-[10px] shadow-lg overflow-hidden outline outline-1 outline-transparent hover:outline-black/20 transition-colors duration-500 ease-in-out group cursor-pointer xl:px-5 xl:py-3 xl:text-base"
                         >
                             <span className="absolute inset-0 bg-black scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-500 ease-in-out z-0"></span>
                             <Phone className="w-4 h-4 z-10 text-black group-hover:text-white transition-colors duration-500 ease-in-out xl:w-5 xl:h-5" />
                             <span className="relative z-10 whitespace-nowrap">
-                                <span className="text-black transition-opacity duration-500 ease-in-out group-hover:opacity-0">Əlaqə saxla</span>
+                                <span className="text-black transition-opacity duration-500 ease-in-out group-hover:opacity-0">{dict.navbar.contactBtn}</span>
                                 <span className="absolute inset-y-0 right-0 flex items-center justify-end overflow-hidden max-w-0 group-hover:max-w-full transition-all duration-500 ease-in-out">
-                                    <span className="text-white">Əlaqə saxla</span>
+                                    <span className="text-white">{dict.navbar.contactBtn}</span>
                                 </span>
                             </span>
                         </a>
@@ -242,27 +247,30 @@ const Navbar = ({ onNavigate }: { onNavigate?: (target: number) => void }) => {
                             <button 
                                 onClick={() => setLangOpen(!langOpen)}
                                 className="flex items-center space-x-1.5 text-white/90 hover:text-white px-1.5 py-2 transition-colors text-sm font-normal cursor-pointer xl:px-2 xl:text-base"
+                                aria-label="Change language"
                             >
-                                <span>{currentLang}</span>
+                                <span>{locale.toUpperCase()}</span>
                                 <ChevronDown size={18} className={`transition-transform duration-200 ${langOpen ? 'rotate-180' : ''}`} />
                             </button>
 
                             {langOpen && (
                                 <div className="absolute right-0 mt-2 w-24 bg-black/90 backdrop-blur-md rounded-lg shadow-xl border border-white/10 overflow-hidden z-50">
-                                    {languages.map((lang) => (
-                                        <button
-                                            key={lang.code}
-                                            onClick={() => {
-                                                setCurrentLang(lang.code);
-                                                setLangOpen(false);
-                                            }}
-                                            className={`w-full text-center px-3 py-2.5 text-base transition-colors hover:bg-white/20 font-montserrat ${
-                                                currentLang === lang.code ? 'bg-white/10 text-white' : 'text-gray-300'
-                                            }`}
-                                        >
-                                            {lang.code}
-                                        </button>
-                                    ))}
+                                    {languages.map((lang) => {
+                                        const localizedPath = getLocalizedPath(lang.code, location.pathname);
+                                        const href = localizedPath + location.search + location.hash;
+                                        return (
+                                            <Link
+                                                key={lang.code}
+                                                to={href}
+                                                onClick={() => setLangOpen(false)}
+                                                className={`block w-full text-center px-3 py-2.5 text-base transition-colors hover:bg-white/20 font-montserrat ${
+                                                    locale === lang.code ? 'bg-white/10 text-white' : 'text-gray-300'
+                                                }`}
+                                            >
+                                                {lang.label}
+                                            </Link>
+                                        );
+                                    })}
                                 </div>
                             )}
                         </div>
@@ -291,7 +299,7 @@ const Navbar = ({ onNavigate }: { onNavigate?: (target: number) => void }) => {
                     {/* Yuxarı Hissə: Logo və X Butonu */}
                     <div className="w-full px-6 pb-4 flex items-center justify-between">
                         <div className="flex items-center">
-                            <img src={logo} alt="moveagency logo" className="object-contain max-w-44" />
+                            <img src={logo} alt={dict.navbar.logoAlt} className="object-contain max-w-44" />
                         </div>
                         <button 
                             onClick={() => setIsOpen(false)} 
@@ -317,19 +325,22 @@ const Navbar = ({ onNavigate }: { onNavigate?: (target: number) => void }) => {
                         }`}
                         style={{ transitionDelay: isOpen ? '600ms' : '0ms' }}
                     >
-                        {['#home', '#about', '#services', '#portfolio', '#contact'].map((href, index) => {
-                            const labels = ['Ana Səhifə', 'Haqqımızda', 'Xidmətlərimiz', 'Portfolio', 'Əlaqə'];
-                            return (
-                                <a 
-                                    key={href}
-                                    href={href} 
-                                    onClick={(e) => handleNavClick(e, href)}
-                                    className="text-2xl sm:text-3xl font-normal text-black/80 hover:text-black tracking-wide transition-colors"
-                                >
-                                    {labels[index]}
-                                </a>
-                            );
-                        })}
+                        {[
+                            { href: '#home', label: dict.navbar.home },
+                            { href: '#about', label: dict.navbar.about },
+                            { href: '#services', label: dict.navbar.services },
+                            { href: '#portfolio', label: dict.navbar.portfolio },
+                            { href: '#contact', label: dict.navbar.contact },
+                        ].map(({ href, label }) => (
+                            <a 
+                                key={href}
+                                href={href} 
+                                onClick={(e) => handleNavClick(e, href)}
+                                className="text-2xl sm:text-3xl font-normal text-black/80 hover:text-black tracking-wide transition-colors"
+                            >
+                                {label}
+                            </a>
+                        ))}
                     </div>
 
                     {/* Alt Hissə: Əlaqə məlumatları, Xəttlər və Sosial Şəbəkələr */}
@@ -343,19 +354,16 @@ const Navbar = ({ onNavigate }: { onNavigate?: (target: number) => void }) => {
                             style={{ transitionDelay: isOpen ? '800ms' : '0ms' }}
                         ></div>
 
-                        {/* 4. Mail və Ünvan */}
+                        {/* 4. Mail */}
                         <div 
                             className={`text-center space-y-1 w-full transform transition-all duration-700 ease-out ${
                                 isOpen ? 'opacity-100 translate-y-0 blur-none' : 'opacity-0 translate-y-8 blur-sm'
                             }`}
                             style={{ transitionDelay: isOpen ? '950ms' : '0ms' }}
                         >
-                            <a href="mailto:info@moveagency.az" className="block text-sm sm:text-base font-normal text-black/90 hover:underline">
-                                info@moveagency.az
+                            <a href="mailto:moveagencyy@gmail.com" className="block text-sm sm:text-base font-normal text-black/90 hover:underline">
+                                moveagencyy@gmail.com
                             </a>
-                            <p className="text-xs sm:text-sm font-montserrat text-black/60">
-                                Bakı şəhəri, Azərbaycan
-                            </p>
                         </div>
 
                         {/* 5. Xətt (Mailin altı) */}
@@ -374,18 +382,20 @@ const Navbar = ({ onNavigate }: { onNavigate?: (target: number) => void }) => {
                             style={{ transitionDelay: isOpen ? '1300ms' : '0ms' }}
                         >
                             <a 
-                                href="tel:*8400" 
+                                href="https://wa.me/994559242562" 
+                                target="_blank"
+                                rel="noreferrer"
                                 className="flex items-center justify-center gap-2 bg-[#0B132B] text-white px-5 py-3 rounded-xl shadow-md text-md font-semibold hover:bg-black transition-colors"
                             >
                                 <Phone className="w-4 h-4 shrink-0" />
-                                <span>Əlaqə saxla</span>
+                                <span>{dict.navbar.contactBtn}</span>
                             </a>
 
                             <div className="flex items-center space-x-3">
-                                <a href="https://facebook.com/moveagency.az" target="_blank" rel="noreferrer" className="w-10 h-10 flex items-center justify-center border border-black/20 rounded-xl hover:bg-black hover:text-white transition-colors">
-                                    <FontAwesomeIcon icon={faFacebookF} className="w-4 h-4" />
+                                <a href="https://www.youtube.com/@MoveAgencyy" target="_blank" rel="noreferrer" className="w-10 h-10 flex items-center justify-center border border-black/20 rounded-xl hover:bg-black hover:text-white transition-colors">
+                                    <FontAwesomeIcon icon={faYoutube} className="w-4 h-4" />
                                 </a>
-                                <a href="https://instagram.com/moveagency.az" target="_blank" rel="noreferrer" className="w-10 h-10 flex items-center justify-center border border-black/20 rounded-xl hover:bg-black hover:text-white transition-colors">
+                                <a href="https://www.instagram.com/moveagency.az" target="_blank" rel="noreferrer" className="w-10 h-10 flex items-center justify-center border border-black/20 rounded-xl hover:bg-black hover:text-white transition-colors">
                                     <FontAwesomeIcon icon={faInstagram} className="w-4 h-4" />
                                 </a>
                             </div>
@@ -399,18 +409,23 @@ const Navbar = ({ onNavigate }: { onNavigate?: (target: number) => void }) => {
                             style={{ transitionDelay: isOpen ? '1450ms' : '0ms' }}
                         >
                             {languages
-                                .filter((lang) => lang.code !== currentLang)
-                                .map((lang, idx, arr) => (
-                                    <React.Fragment key={lang.code}>
-                                        <button
-                                            onClick={() => setCurrentLang(lang.code)}
-                                            className="cursor-pointer transition-colors hover:text-black font-medium"
-                                        >
-                                            {lang.code}
-                                        </button>
-                                        {idx < arr.length - 1 && <span className="text-black/30">•</span>}
-                                    </React.Fragment>
-                                ))}
+                                .filter((lang) => lang.code !== locale)
+                                .map((lang, idx, arr) => {
+                                    const localizedPath = getLocalizedPath(lang.code, location.pathname);
+                                    const href = localizedPath + location.search + location.hash;
+                                    return (
+                                        <React.Fragment key={lang.code}>
+                                            <Link
+                                                to={href}
+                                                onClick={() => setIsOpen(false)}
+                                                className="cursor-pointer transition-colors hover:text-black font-medium"
+                                            >
+                                                {lang.label}
+                                            </Link>
+                                            {idx < arr.length - 1 && <span className="text-black/30">•</span>}
+                                        </React.Fragment>
+                                    );
+                                })}
                         </div>
 
                     </div>

@@ -1,157 +1,163 @@
-import { useState, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import BlurText from "./BlurText";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Pause, Play, Volume2, VolumeX } from "lucide-react";
+import { useLocale } from '../locales/useLocale';
 
-interface ArchitectureSlide {
-    id: number;
-    image: string;
-    title: string;
-    subtitle: string;
-    description: string;
+interface ReelItem {
+  id: string;
+  videoSrc: string;
 }
 
-const slidesData: ArchitectureSlide[] = [
-    {
-        id: 1,
-        image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=1600&auto=format&fit=crop",
-        title: "Təbiətdən",
-        subtitle: "ilhamlanan memarlıq",
-        description: "Sky Breeze-in memarlıq konsepsiyası dağ landşaftı ilə harmoniya əsasında yaradılmışdır. Təbii materiallar, panoramik pəncərələr və müasir memarlıq həlləri daxili məkanla təbiət arasında təbii əlaqə yaradır."
-    },
-    {
-        id: 2,
-        image: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?q=80&w=1600&auto=format&fit=crop",
-        title: "Müasir rahatlıq",
-        subtitle: "və dağ havası",
-        description: "Sky Breeze, onu əhatə edən landşaftın təbii davamı kimi dizayn edilmişdir. Müasir memarlıq həlləri, təbii materiallar, panoramik pəncərələr və detallara verilən diqqət dağ təbiətinin gözəlliyini hiss etməyə imkan verir."
-    },
-    {
-        id: 3,
-        image: "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?q=80&w=1600&auto=format&fit=crop",
-        title: "İnteryer və",
-        subtitle: "geniş məkanlar",
-        description: "Hər bir detal fəsillərin dəyişən gözəlliyini birbaşa evinə daşımaq üçün düşünülüb. İlin istənilən fəslində yeni formada rahatlıq və hüzur yaşayın."
-    }
+const reelsData: ReelItem[] = [
+  {
+    id: "sakura-sushi",
+    videoSrc: "https://res.cloudinary.com/ta8jgr46/video/upload/f_auto/v1789733744/sakura_sushi.mp4",
+  },
+  {
+    id: "coffelier",
+    videoSrc: "https://res.cloudinary.com/ta8jgr46/video/upload/f_auto/v1789733742/coffelier.mp4",
+  },
+  {
+    id: "momentum",
+    videoSrc: "https://res.cloudinary.com/ta8jgr46/video/upload/f_auto/v1789733753/IMG_7114.mp4",
+  },
 ];
 
-export default function ArchitectureSection() {
-    const [currentIndex, setCurrentIndex] = useState(0);
+interface ReelCardProps {
+  reel: ReelItem;
+  isPlaying: boolean;
+  onTogglePlay: () => void;
+}
 
-    // Avtomatik keçid (istəsəniz silə bilərsiniz)
-    useEffect(() => {
-        const timer = setInterval(() => {
-            setCurrentIndex((prev) => (prev === slidesData.length - 1 ? 0 : prev + 1));
-        }, 6000);
-        return () => clearInterval(timer);
-    }, []);
+interface MuteButtonProps {
+  isMuted: boolean;
+  onToggle: (e: React.MouseEvent) => void;
+}
 
-    const handlePrev = () => {
-        setCurrentIndex((prev) => (prev === 0 ? slidesData.length - 1 : prev - 1));
-    };
+function MuteButton({ isMuted, onToggle }: MuteButtonProps) {
+  const { dict } = useLocale();
+  return (
+    <button
+      type="button"
+      onClick={onToggle}
+      aria-label={isMuted ? dict.video.unmuteLabel : dict.video.muteLabel}
+      className="absolute top-4 right-4 z-20 w-9 h-9 rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center text-white opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+    >
+      {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+    </button>
+  );
+}
 
-    const handleNext = () => {
-        setCurrentIndex((prev) => (prev === slidesData.length - 1 ? 0 : prev + 1));
-    };
+function ReelCard({ reel, isPlaying, onTogglePlay }: ReelCardProps) {
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const [isMuted, setIsMuted] = useState(false);
 
-    const currentSlide = slidesData[currentIndex];
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
 
-    return (
-        <section id="portfolio" className="relative w-full min-h-screen bg-[#f7f4ef] text-[#2c221e] py-16 px-6 md:px-16 flex items-center overflow-hidden">
+    if (!isPlaying) {
+      video.pause();
+    }
+  }, [isPlaying]);
 
-            <div className="max-w-[1400px] mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+  const handleCardClick = () => {
+    const video = videoRef.current;
+    if (!video) return;
 
-                {/* ================= SOL TƏRƏF: BÖYÜK ANİMASİYALI ŞƏKİL SLAYDERİ ================= */}
-                <div className="lg:col-span-7 relative h-[400px] md:h-[550px] rounded-2xl overflow-hidden shadow-2xl group">
-                    {slidesData.map((slide, index) => (
-                        <div
-                            key={slide.id}
-                            className={`absolute inset-0 transition-all duration-1000 ease-in-out transform ${index === currentIndex
-                                    ? "opacity-100 scale-100 translate-x-0"
-                                    : "opacity-0 scale-105 translate-x-4 pointer-events-none"
-                                }`}
-                        >
-                            <img
-                                src={slide.image}
-                                alt={slide.title}
-                                className="w-full h-full object-cover"
-                            />
-                            {/* Şəkil üzərində yüngül kölgə */}
-                            <div className="absolute inset-0 bg-black/10" />
-                        </div>
-                    ))}
+    if (isPlaying) {
+      video.pause();
+      onTogglePlay();
+    } else {
+      video.volume = 1.0;
+      video.muted = isMuted;
 
-                    {/* Slayder Ox Düymələri (Şəklin üzərində aşağı sağ küncdə) */}
-                    <div className="absolute bottom-6 right-6 z-20 flex items-center gap-3">
-                        <button
-                            onClick={handlePrev}
-                            aria-label="Əvvəlki"
-                            className="w-12 h-12 rounded-full bg-white/80 hover:bg-white text-[#2c221e] backdrop-blur-md flex items-center justify-center shadow-lg transition-transform active:scale-95"
-                        >
-                            <ChevronLeft className="w-5 h-5" />
-                        </button>
-                        <button
-                            onClick={handleNext}
-                            aria-label="Növbəti"
-                            className="w-12 h-12 rounded-full bg-white/80 hover:bg-white text-[#2c221e] backdrop-blur-md flex items-center justify-center shadow-lg transition-transform active:scale-95"
-                        >
-                            <ChevronRight className="w-5 h-5" />
-                        </button>
-                    </div>
-                </div>
+      video
+        .play()
+        .then(() => {
+          onTogglePlay();
+        })
+        .catch(() => {
+          video.muted = true;
+          setIsMuted(true);
+          video.play().then(() => onTogglePlay());
+        });
+    }
+  };
 
-                {/* ================= SAĞ TƏRƏF: ANİMASİYALI MƏTN BLOKU (BlurText) ================= */}
-                <div className="lg:col-span-5 flex flex-col justify-center space-y-6">
+  const handleSoundToggle = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const video = videoRef.current;
+    if (!video) return;
 
-                    {/* Başlıq hissəsi */}
-                    <div className="space-y-1">
-                        <BlurText
-                            key={`title-${currentIndex}`}
-                            text={currentSlide.title}
-                            animateBy="words"
-                            direction="top"
-                            className="font-serif text-3xl md:text-5xl text-[#2c221e] font-normal"
-                            delay={30}
-                        />
-                        <BlurText
-                            key={`subtitle-${currentIndex}`}
-                            text={currentSlide.subtitle}
-                            animateBy="words"
-                            direction="bottom"
-                            className="font-serif italic text-3xl md:text-5xl text-[#2c221e] font-light"
-                            delay={40}
-                        />
-                    </div>
+    const nextMuted = !isMuted;
+    video.muted = nextMuted;
+    video.volume = nextMuted ? 0 : 1.0;
+    setIsMuted(nextMuted);
+  };
 
-                    {/* Təsvir mətni */}
-                    <div className="pt-2">
-                        <BlurText
-                            key={`desc-${currentIndex}`}
-                            text={currentSlide.description}
-                            animateBy="words"
-                            direction="bottom"
-                            delay={10}
-                            stepDuration={0.15}
-                            className="text-sm md:text-base text-[#5a4d45] font-light leading-relaxed text-left"
-                        />
-                    </div>
+  return (
+    <div
+      className="relative w-full aspect-9/16 max-w-[340px] mx-auto rounded-2xl overflow-hidden shadow-2xl group cursor-pointer"
+      onClick={handleCardClick}
+    >
+      <video
+        ref={videoRef}
+        src={reel.videoSrc}
+        loop
+        playsInline
+        preload="auto"
+        className="w-full h-full object-cover"
+      />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/5 to-transparent pointer-events-none" />
 
-                    {/* Slayder Göstəriciləri (Nöqtələr) */}
-                    <div className="flex items-center gap-2 pt-4">
-                        {slidesData.map((_, index) => (
-                            <button
-                                key={index}
-                                onClick={() => setCurrentIndex(index)}
-                                className={`h-1.5 rounded-full transition-all duration-500 ${currentIndex === index ? "w-8 bg-[#2c221e]" : "w-2 bg-[#2c221e]/30"
-                                    }`}
-                                aria-label={`Slayd ${index + 1}`}
-                            />
-                        ))}
-                    </div>
+      <div className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+        <span className="w-14 h-14 rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center text-white">
+          {isPlaying ? (
+            <Pause className="w-6 h-6" />
+          ) : (
+            <Play className="w-6 h-6 ml-0.5" fill="currentColor" />
+          )}
+        </span>
+      </div>
 
-                </div>
+      {isPlaying && (
+        <MuteButton isMuted={isMuted} onToggle={handleSoundToggle} />
+      )}
+    </div>
+  );
+}
 
-            </div>
+export default function PortfolioSection() {
+  const { dict } = useLocale();
+  const [playingIndex, setPlayingIndex] = useState<number | null>(null);
 
-        </section>
-    );
+  return (
+    <section id="portfolio" className="relative w-full bg-[#f7f4ef] text-[#2c221e] py-16 px-6 md:px-16">
+      <div className="max-w-[1400px] mx-auto w-full">
+        <div className="text-center mb-10 md:mb-14">
+          <BlurText
+            text={dict.portfolio.title}
+            animateBy="words"
+            direction="top"
+            className="font-serif text-3xl md:text-5xl text-[#2c221e] justify-center"
+            delay={40}
+          />
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+          {reelsData.map((reel, index) => (
+            <ReelCard
+              key={reel.id}
+              reel={reel}
+              isPlaying={playingIndex === index}
+              onTogglePlay={() =>
+                setPlayingIndex(playingIndex === index ? null : index)
+              }
+            />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
 }

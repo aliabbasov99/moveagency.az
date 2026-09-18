@@ -1,5 +1,5 @@
-import marketingHorizontal from "../assets/video/marketing_horizontonal.mp4"
-import marketingVertical from "../assets/video/marketing_vertical.mp4"
+const marketingHorizontal = "https://res.cloudinary.com/ta8jgr46/video/upload/v1789738059/marketing_horizontonal_online-video-cutter.com.mp4"
+const marketingVertical = "https://res.cloudinary.com/ta8jgr46/video/upload/v1789738053/marketing_vertical_online-video-cutter.com.mp4"
 
 const Hero = () => {
   return (

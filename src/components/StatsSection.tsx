@@ -1,4 +1,6 @@
 import { useState, useEffect, useRef } from "react";
+import { useLocale } from '../locales/useLocale';
+import { getDictForLocale } from "../locales/dict";
 
 interface StatItem {
   id: number;
@@ -9,29 +11,29 @@ interface StatItem {
   alignment: "left" | "center" | "right";
 }
 
-const statsData: StatItem[] = [
+const getStatsData = (dict: ReturnType<typeof getDictForLocale>): StatItem[] => [
   {
     id: 1,
-    endValue: 300,
-    suffix: "K+",
-    title: "illik ziyarətçi",
-    description: "Stabil turist axını və kurorta marağın artması",
+    endValue: dict.stats.views.value,
+    suffix: dict.stats.views.suffix,
+    title: dict.stats.views.title,
+    description: dict.stats.views.desc,
     alignment: "left"
   },
   {
     id: 2,
-    endValue: 45,
-    suffix: " KM",
-    title: "dağ xizək trassı",
-    description: "Regionun ən böyük və ən müasir dağ xizək zonalarından biri",
+    endValue: dict.stats.experience.value,
+    suffix: dict.stats.experience.suffix,
+    title: dict.stats.experience.title,
+    description: dict.stats.experience.desc,
     alignment: "center"
   },
   {
     id: 3,
-    endValue: 4,
-    suffix: "",
-    title: "fəsil - ilboyu fəaliyyət",
-    description: "İlin istənilən vaxtında dağ xizəyi, piyada marşrutları, velosiped zolaqları və digər fəaliyyətlər",
+    endValue: dict.stats.satisfaction.value,
+    suffix: dict.stats.satisfaction.suffix,
+    title: dict.stats.satisfaction.title,
+    description: dict.stats.satisfaction.desc,
     alignment: "right"
   }
 ];
@@ -82,12 +84,14 @@ function Counter({ end, duration = 2000 }: { end: number; duration?: number }) {
 }
 
 export default function StatsSection() {
+  const { dict } = useLocale();
+  const statsData = getStatsData(dict);
+  
   return (
     <section className="relative w-full bg-[#f7f4ef] text-[#2c221e] py-20 px-6 md:px-16 overflow-hidden">
       <div className="max-w-[1300px] mx-auto flex flex-col">
         
         {statsData.map((stat, index) => {
-          // Rəqəm və başlığın yerləşmə mövqeyi (Start, Center, End)
           const positionClass = 
             stat.alignment === "left" ? "mr-auto" :
             stat.alignment === "center" ? "mx-auto" : 
@@ -111,7 +115,7 @@ export default function StatsSection() {
                   </h3>
                 </div>
 
-                {/* Sağ tərəfdəki açıqlama mətni (həmişə sabit və sola dayanıqlı) */}
+                {/* Sağ tərəfdəki açıqlama mətni */}
                 <div className="w-full md:max-w-xs text-sm md:text-base text-[#6b5c53] font-light leading-relaxed text-left shrink-0">
                   {stat.description}
                 </div>

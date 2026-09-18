@@ -1,35 +1,34 @@
 import "./assets/style/main.css"
-import Navbar from "./components/Navbar"
-import Hero from "./components/Hero"
-import Title from "./components/Title"
-import SocialMediaStrategy from "./components/SocialMediaStrategy"
-import HeroSection from "./components/HeroSection"
-import Services from "./components/Services"
-import ArchSection from "./components/ArchSection"
-import StatsSection from "./components/StatsSection"
-import SEO from "./components/SEO"
-import Form from "./components/Form"
-import Footer from "./components/Footer"
-import useSmoothScroll from "./hooks/useSmoothScroll";
+import { BrowserRouter, Routes, Route } from "react-router-dom"
+import { LocaleProvider } from "./locales/LocaleContext"
+import Home from "./pages/Home"
+import PrivacyPolicy from "./pages/PrivacyPolicy"
+import TermsOfUse from "./pages/TermsOfUse"
+import SEOHead from "./components/SEOHead"
 
-const App = () => {
-  const { scrollTo } = useSmoothScroll(0.08); // ease dəyərini istəyinə görə dəyi (0.05–0.15 arası)
-
+export const AppRoutes = () => {
   return (
-    <>
-      <Navbar onNavigate={scrollTo} />
-      <Hero />
-      <Title />
-      <SocialMediaStrategy />
-      <HeroSection />
-      <Services />
-      <ArchSection />
-      <StatsSection />
-      <SEO />
-      <Form />
-      <Footer onNavigate={scrollTo} />
-    </>
+      <LocaleProvider>
+        <SEOHead />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/en" element={<Home />} />
+          <Route path="/ru" element={<Home />} />
+          <Route path="/mexfilik-siyaseti" element={<PrivacyPolicy />} />
+          <Route path="/en/mexfilik-siyaseti" element={<PrivacyPolicy />} />
+          <Route path="/ru/mexfilik-siyaseti" element={<PrivacyPolicy />} />
+          <Route path="/istifade-sertleri" element={<TermsOfUse />} />
+          <Route path="/en/istifade-sertleri" element={<TermsOfUse />} />
+          <Route path="/ru/istifade-sertleri" element={<TermsOfUse />} />
+        </Routes>
+      </LocaleProvider>
   )
 }
+
+const App = () => (
+  <BrowserRouter>
+    <AppRoutes />
+  </BrowserRouter>
+)
 
 export default App

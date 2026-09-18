@@ -1,6 +1,8 @@
 import React, { useState } from "react";
+import { useLocale } from '../locales/useLocale';
 
 export default function ProjectContactForm() {
+  const { dict } = useLocale();
   const [message, setMessage] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -10,7 +12,7 @@ export default function ProjectContactForm() {
     if (!text) return;
 
     window.open(
-      `https://wa.me/994504588072?text=${encodeURIComponent(text)}`,
+      `https://wa.me/994559242562?text=${encodeURIComponent(text)}`,
       "_blank",
       "noopener,noreferrer"
     );
@@ -22,7 +24,7 @@ export default function ProjectContactForm() {
         
         {/* Başlıq */}
         <h2 className="text-2xl md:text-3xl font-serif tracking-wider text-[#3d332a] mb-8">
-          SORĞU GÖNDƏRMƏK
+          {dict.form.title}
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -32,7 +34,7 @@ export default function ProjectContactForm() {
             <textarea
               required
               rows={5}
-              placeholder="Mesaj"
+              placeholder={dict.form.messagePlaceholder}
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               className="w-full bg-transparent border-b border-[#d4cbc0] py-3 text-[#3d332a] placeholder-[#8c7d70] focus:outline-none focus:border-[#3d332a] transition-colors text-sm resize-y"
@@ -44,7 +46,7 @@ export default function ProjectContactForm() {
             type="submit"
             className="w-full mt-4 bg-[#6b7585] hover:bg-[#586170] text-white font-medium tracking-widest py-4 rounded-xl transition-all shadow-md text-sm cursor-pointer"
           >
-            GÖNDƏR
+            {dict.form.submitBtn}
           </button>
 
         </form>

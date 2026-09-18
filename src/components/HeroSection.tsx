@@ -1,7 +1,7 @@
 import { motion, type Transition, type Easing } from 'motion/react';
 import { useEffect, useRef, useState, useMemo } from 'react';
-import { Play, Pause } from "lucide-react";
-
+import { useLocale } from '../locales/useLocale';
+import SmmImg from '../assets/img/static/smm.jpg'
 // ==========================================
 // 1. BLUR TEXT KOMPONENTİ (Hər dəfə qayıdanda işləyən)
 // ==========================================
@@ -136,22 +136,21 @@ interface HeroSectionProps {
   body?: string
   imageSrc?: string
   imageAlt?: string
-  audioSrc?: string
 }
 
-const BAR_COUNT = 28
-
 export default function HeroSection({
-  eyebrowItalic = "Sky Breeze",
-  headlineRest = "— memarlıqla təbiətin bir araya gəldiyi məkan",
-  body = "Sky Breeze - Şahdağın mərkəzində yerləşən, dağlarda yeni həyat standartı yaradan müasir yaşayış layihəsidir. Düşünülmüş memarlıq, unikal təbiət və inkişaf etmiş infrastruktur yüksək komfortun azadlıq və harmoniya atmosferi ilə birləşdiyi məkan yaradır.",
-  imageSrc = "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/11/Test-Logo.svg/3840px-Test-Logo.svg.png?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail",
-  imageAlt = "Sky Breeze facade",
-  audioSrc,
+  eyebrowItalic,
+  headlineRest,
+  body,
+  imageSrc = SmmImg,
+  imageAlt,
 }: HeroSectionProps) {
-  const [playing, setPlaying] = useState(false)
-  const audioRef = useRef<HTMLAudioElement | null>(null)
+  const { dict } = useLocale()
   
+  const finalEyebrow = eyebrowItalic ?? dict.heroSection.eyebrow
+  const finalHeadline = headlineRest ?? dict.heroSection.headline
+  const finalBody = body ?? dict.heroSection.body
+  const finalImageAlt = imageAlt ?? dict.heroSection.imageAlt
   // Şəkil üçün ekrana gəlib-gəlmədiyini izləyənref və state
   const imageRef = useRef<HTMLDivElement | null>(null)
   const [imageInView, setImageInView] = useState(false)
@@ -173,34 +172,24 @@ export default function HeroSection({
     }
   }, [])
 
-  // Audio pleyerin idarə edilməsi
-  useEffect(() => {
-    if (!audioRef.current) return
-    if (playing) {
-      audioRef.current.play().catch(() => setPlaying(false))
-    } else {
-      audioRef.current.pause()
-    }
-  }, [playing])
-
   return (
     <section id="about" className="grid min-h-[620px] w-full grid-cols-1 items-stretch bg-[#fdfbf1] lg:grid-cols-2 overflow-hidden">
       {/* Text column */}
       <div className="flex flex-col justify-center px-4 py-10 sm:px-6 sm:py-14 lg:px-10 lg:py-16 xl:px-20">
         <h1 className="max-w-xl font-serif text-4xl leading-tight text-[#2a1a14] md:text-5xl">
           <BlurText
-            text={eyebrowItalic}
+            text={finalEyebrow}
             animateBy="words"
             direction="top"
             className="italic"
             delay={100}
           />{" "}
-          <BlurText text={headlineRest} animateBy="words" direction="top" delay={30} />
+          <BlurText text={finalHeadline} animateBy="words" direction="top" delay={30} />
         </h1>
 
         <div className="mt-6 max-w-md">
           <BlurText
-            text={body}
+            text={finalBody}
             animateBy="words"
             direction="bottom"
             delay={10}
@@ -208,80 +197,18 @@ export default function HeroSection({
             className="text-base leading-relaxed text-[#8c8579]"
           />
         </div>
-
-        {/* Play button + waveform */}
-        <div className="mt-8 flex items-center gap-3 sm:mt-12 sm:gap-4">
-          <button
-            onClick={() => setPlaying((p) => !p)}
-            aria-label={playing ? "Pause" : "Play"}
-            className="group relative flex h-16 w-16 shrink-0 items-center justify-center rounded-full border border-[#2a1a14]/15 bg-[#fdfbf1] transition-transform duration-300 hover:scale-[1.04] sm:h-20 sm:w-20"
-          >
-            <span className="flex h-11 w-11 items-center justify-center rounded-full bg-[#2a1a14] text-[#fdfbf1] transition-transform duration-300 group-active:scale-95 sm:h-14 sm:w-14">
-              {playing ? (
-                <Pause className="h-5 w-5" fill="currentColor" />
-              ) : (
-                <Play className="ml-0.5 h-5 w-5" fill="currentColor" />
-              )}
-            </span>
-            {playing && (
-              <span className="absolute inset-0 animate-ping rounded-full border border-[#2a1a14]/20" />
-            )}
-          </button>
-
-          <Waveform playing={playing} />
-
-          {audioSrc && (
-            <audio
-              ref={audioRef}
-              src={audioSrc}
-              onEnded={() => setPlaying(false)}
-              className="hidden"
-            />
-          )}
-        </div>
       </div>
 
       {/* Image column with Re-triggerable Animation */}
       <div ref={imageRef} className="relative min-h-[320px] overflow-hidden lg:min-h-0">
         <img
           src={imageSrc}
-          alt={imageAlt}
+          alt={finalImageAlt}
           className={`h-full w-full object-cover transition-all duration-1000 ease-out ${
             imageInView ? "opacity-100 scale-100" : "opacity-0 scale-105"
           }`}
         />
       </div>
     </section>
-  )
-}
-
-function Waveform({ playing }: { playing: boolean }) {
-  const heights = Array.from({ length: BAR_COUNT }, (_, i) => {
-    const wave = Math.sin(i * 0.7) * 0.5 + Math.sin(i * 1.9) * 0.3
-    return 8 + Math.abs(wave) * 20
-  })
-
-  return (
-    <div className="flex h-10 flex-1 items-center gap-[3px]">
-      <span className="mr-1 h-full w-px bg-[#2a1a14]/70" />
-      {heights.map((h, i) => (
-        <span
-          key={i}
-          className="w-[3px] shrink-0 rounded-full bg-[#2a1a14]/25"
-          style={{
-            height: `${h}px`,
-            animation: playing
-              ? `wave-pulse 900ms ease-in-out ${(i % 7) * 90}ms infinite alternate`
-              : undefined,
-          }}
-        />
-      ))}
-      <style>{`
-        @keyframes wave-pulse {
-          0% { transform: scaleY(0.55); opacity: 0.35; }
-          100% { transform: scaleY(1); opacity: 0.9; }
-        }
-      `}</style>
-    </div>
   )
 }

@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && vite build --manifest && node scripts/prerender.mjs",
+    "test:seo": "node scripts/check-seo.mjs",
     "lint": "eslint .",
     "preview": "vite preview"
   },
@@ -20,6 +21,7 @@
     "motion": "^13.4.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
+    "react-router-dom": "^7.18.4",
     "swiper": "^14.2.0",
     "tailwindcss": "^4.3.3"
   },
