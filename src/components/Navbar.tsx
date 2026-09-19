@@ -5,6 +5,11 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faYoutube, faInstagram } from '@fortawesome/free-brands-svg-icons';
 import { motion, AnimatePresence } from 'framer-motion';
 import logo from '../assets/img/static/ma_logo.webp';
+import moveM from '../assets/img/static/move_m.svg';
+import moveO from '../assets/img/static/move_o.svg';
+import moveV from '../assets/img/static/move_v.svg';
+import moveE from '../assets/img/static/move_e.svg';
+import agency from '../assets/img/static/agency.webp';
 import { useLocale } from '../locales/useLocale';
 import { getLocalizedPath } from '../locales/index';
 import type { Locale } from '../locales/index';
@@ -16,6 +21,13 @@ const getInitialLogoWidth = () => {
     if (w < 1024) return 208;
     return 288;
 };
+
+const LETTERS = [
+    { src: moveM, alt: 'M' },
+    { src: moveO, alt: 'O' },
+    { src: moveV, alt: 'V' },
+    { src: moveE, alt: 'E' },
+];
 
 const Navbar = ({ onNavigate }: { onNavigate?: (target: number) => void }) => {
     const { locale, dict } = useLocale();
@@ -29,6 +41,8 @@ const Navbar = ({ onNavigate }: { onNavigate?: (target: number) => void }) => {
     const [logoMoving, setLogoMoving] = useState(false);
     const [animationTarget, setAnimationTarget] = useState({ x: 0, y: 0, width: getInitialLogoWidth() });
     const [initialLogoWidth] = useState(getInitialLogoWidth);
+    const [phase, setPhase] = useState(0);
+    const [assembled, setAssembled] = useState(false);
 
     const logoRef = useRef<HTMLImageElement | null>(null);
     const langDropdownRef = useRef<HTMLDivElement | null>(null);
@@ -43,52 +57,81 @@ const Navbar = ({ onNavigate }: { onNavigate?: (target: number) => void }) => {
     // -----------------------------------------
     // LOADING & ANIMATION LOGIC
     // -----------------------------------------
+    // Progress counter (rAF ilə — interval throttling-i səbəbindən ilişib qalmır)
     useEffect(() => {
-        let timeout1: ReturnType<typeof setTimeout> | undefined;
-        let timeout2: ReturnType<typeof setTimeout> | undefined;
+        const start = performance.now();
+        const duration = 1680;
+        let rafId = 0;
 
-        const interval = setInterval(() => {
-            setProgress((prev) => {
-                const next = prev + Math.floor(Math.random() * 6) + 3;
+        const tick = (now: number) => {
+            const next = Math.min(100, ((now - start) / duration) * 100);
+            setProgress(next);
+            if (next < 100) rafId = requestAnimationFrame(tick);
+        };
 
-                if (next >= 100) {
-                    clearInterval(interval);
+        rafId = requestAnimationFrame(tick);
+        return () => cancelAnimationFrame(rafId);
+    }, []);
 
-                    // Loading bitdikdə Navbar-dakı logonun dəqiq koordinatlarını götürürük
-                    if (logoRef.current) {
-                        const rect = logoRef.current.getBoundingClientRect();
-                        const logoCenterX = rect.left + rect.width / 2;
-                        const logoCenterY = rect.top + rect.height / 2;
-                        const screenCenterX = window.innerWidth / 2;
-                        const screenCenterY = window.innerHeight / 2;
+    // Təhlükəsizlik: hər hansı səbəbdən animasiya tamamlanmasa da preloader mütləq bağlanır
+    useEffect(() => {
+        const failSafe = setTimeout(() => setLoading(false), 4500);
+        return () => clearTimeout(failSafe);
+    }, []);
 
-                        setAnimationTarget({
-                            x: logoCenterX - screenCenterX,
-                            y: logoCenterY - screenCenterY,
-                            width: rect.width,
-                        });
-                    }
+    // Logo assembly: move_bg -> (fasilə) -> hərflər (M O V E) -> agency
+    useEffect(() => {
+        const BG_START = 35;        // bg-nin başlama vaxtı
+        const BG_DURATION = 245;    // bg animasiyasının müddəti (transition ilə eyni)
+        const PAUSE = 200;          // bg gəldikdən sonra gözləmə  <-- bunu artırıb/azalda bilərsən
+        const LETTER_STEP = 350;    // hərflər arası interval
 
-                    timeout1 = setTimeout(() => {
-                        setLogoMoving(true);
+        const firstLetter = BG_START + BG_DURATION + PAUSE; // 680ms
+        const times = [
+            BG_START,                       // phase 1: bg
+            firstLetter,                    // phase 2: M
+            firstLetter + LETTER_STEP,      // phase 3: O
+            firstLetter + LETTER_STEP * 2,  // phase 4: V
+            firstLetter + LETTER_STEP * 3,  // phase 5: E
+            firstLetter + LETTER_STEP * 4,  // phase 6: agency
+        ];
+        const assembledAt = times[5] + 420; // agency animasiyası bitəndən sonra
 
-                        timeout2 = setTimeout(() => {
-                            setLoading(false);
-                        }, 900);
-                    }, 200);
-
-                    return 100;
-                }
-                return next;
-            });
-        }, 30);
+        const timers = times.map((t, i) => setTimeout(() => setPhase(i + 1), t));
+        const done = setTimeout(() => setAssembled(true), assembledAt);
 
         return () => {
-            clearInterval(interval);
-            clearTimeout(timeout1);
-            clearTimeout(timeout2);
+            timers.forEach(clearTimeout);
+            clearTimeout(done);
         };
     }, []);
+
+    // Yığılma bitdikdə logo Navbar-dakı yerinə uçur
+    useEffect(() => {
+        if (progress < 100 || !assembled) return;
+
+        if (logoRef.current) {
+            const rect = logoRef.current.getBoundingClientRect();
+            const logoCenterX = rect.left + rect.width / 2;
+            const logoCenterY = rect.top + rect.height / 2;
+            const screenCenterX = window.innerWidth / 2;
+            const screenCenterY = window.innerHeight / 2;
+
+            setAnimationTarget({
+                x: logoCenterX - screenCenterX,
+                y: logoCenterY - screenCenterY,
+                width: rect.width,
+            });
+        }
+
+        const t1 = setTimeout(() => setLogoMoving(true), 140);
+        const t2 = setTimeout(() => setLoading(false), 770);
+
+        return () => {
+            clearTimeout(t1);
+            clearTimeout(t2);
+        };
+    }, [progress, assembled]);
 
     // Dropdown xaricinə klikləndikdə menyuları bağlamaq üçün
     useEffect(() => {
@@ -125,7 +168,7 @@ const Navbar = ({ onNavigate }: { onNavigate?: (target: number) => void }) => {
     };
 
     const navLinkClass = "relative inline-block text-[#eee] font-medium font-playfair uppercase tracking-wider group cursor-pointer";
-    
+
     const renderNavLink = (href: string, text: string) => (
         <a href={href} onClick={(e) => handleNavClick(e, href)} className={navLinkClass}>
             <span>{text}</span>
@@ -146,13 +189,13 @@ const Navbar = ({ onNavigate }: { onNavigate?: (target: number) => void }) => {
                         className="fixed inset-0 z-[9999] bg-black"
                         initial={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        transition={{ duration: 0.25 }}
+                        transition={{ duration: 0.175 }}
                     >
-                        {/* CENTER LOGO */}
-                        <motion.img
-                            src={logo}
-                            alt={dict.navbar.logoAlt}
-                            className="fixed left-1/2 top-1/2 object-contain pointer-events-none"
+                        {/* CENTER LOGO — yığılma animasiyası */}
+                        <motion.div
+                            aria-hidden="true"
+                            className="fixed left-1/2 top-1/2 flex items-center justify-center pointer-events-none"
+                            style={{ aspectRatio: '470 / 75' }}
                             initial={{
                                 x: "-50%",
                                 y: "-50%",
@@ -165,7 +208,7 @@ const Navbar = ({ onNavigate }: { onNavigate?: (target: number) => void }) => {
                                           y: `calc(-50% + ${animationTarget.y}px)`,
                                           width: `${animationTarget.width}px`,
                                           transition: {
-                                              duration: 0.9,
+                                              duration: 0.63,
                                               ease: [0.76, 0, 0.24, 1],
                                           },
                                       }
@@ -175,13 +218,49 @@ const Navbar = ({ onNavigate }: { onNavigate?: (target: number) => void }) => {
                                           width: `${initialLogoWidth}px`,
                                       }
                             }
-                        />
+                        >
+                            {/* move_bg — solid color plitə */}
+                            <motion.div
+                                className="relative flex items-center justify-center gap-[2px] bg-[#1C2222]"
+                                style={{ width: '44.26%', height: '100%' }}
+                                initial={{ x: '-70vw', opacity: 0 }}
+                                animate={phase >= 1 ? { x: '0%', opacity: 1 } : { x: '-70vw', opacity: 0 }}
+                                transition={{ duration: 0.245, ease: [0.76, 0, 0.24, 1] }}
+                            >
+                                {LETTERS.map(({ src, alt }, i) => (
+                                    <motion.img
+                                        key={alt}
+                                        src={src}
+                                        alt={alt}
+                                        style={{ height: '36.5%', width: 'auto' }}
+                                        initial={{ x: '-300%', opacity: 0 }}
+                                        animate={
+                                            phase >= i + 2
+                                                ? { x: '0%', opacity: 1 }
+                                                : { x: '-300%', opacity: 0 }
+                                        }
+                                        transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                                    />
+                                ))}
+                            </motion.div>
+
+                            {/* agency — sağdan-sola gəlib yapışır */}
+                            <motion.img
+                                src={agency}
+                                alt="agency"
+                                className="h-full w-auto object-contain"
+                                style={{ width: '55.74%' }}
+                                initial={{ x: '70vw', opacity: 0 }}
+                                animate={phase >= 6 ? { x: '0%', opacity: 1 } : { x: '70vw', opacity: 0 }}
+                                transition={{ duration: 0.35, ease: [0.76, 0, 0.24, 1] }}
+                            />
+                        </motion.div>
 
                         {/* BOTTOM LOADING BAR */}
                         <div className="absolute bottom-8 left-6 right-6">
                             <div className="flex items-end justify-between mb-3 text-white">
                                 <span className="text-sm self-end font-mono"></span>
-                                <span className="text-sm self-end font-mono">{progress}%</span>
+                                <span className="text-sm self-end font-mono">{Math.round(progress)}%</span>
                             </div>
 
                             <div className="w-full h-[1px] bg-white/20 overflow-hidden">
@@ -189,7 +268,7 @@ const Navbar = ({ onNavigate }: { onNavigate?: (target: number) => void }) => {
                                     className="h-full bg-white"
                                     initial={{ width: "0%" }}
                                     animate={{ width: `${progress}%` }}
-                                    transition={{ duration: 0.1 }}
+                                    transition={{ duration: 0.07 }}
                                 />
                             </div>
                         </div>
@@ -200,17 +279,17 @@ const Navbar = ({ onNavigate }: { onNavigate?: (target: number) => void }) => {
             {/* =========================================
                 NAVBAR
             ========================================= */}
-            <header ref={headerRef} className="text-white bg-gradient-to-b from-black/70 via-black/35 to-transparent fixed top-0 left-0 w-full z-50">            
+            <header ref={headerRef} className="text-white bg-gradient-to-b from-black/70 via-black/35 to-transparent fixed top-0 left-0 w-full z-50">
                 <nav className="w-full mx-auto px-4 py-6 sm:px-6 lg:px-6 xl:px-10 flex flex-row items-center justify-between">
-                    
+
                     {/* Logo */}
                     <div className="flex items-center">
                         <a href="#home" onClick={(e) => handleNavClick(e, '#home')} className="block">
-                            <img 
-                                ref={logoRef} 
-                                src={logo} 
+                            <img
+                                ref={logoRef}
+                                src={logo}
                                 alt={dict.navbar.logoAlt}
-                                className="object-contain max-w-40 sm:max-w-52 lg:max-w-44 xl:max-w-60 2xl:max-w-72" 
+                                className="object-contain max-w-40 sm:max-w-52 lg:max-w-44 xl:max-w-60 2xl:max-w-72"
                             />
                         </a>
                     </div>
@@ -226,8 +305,8 @@ const Navbar = ({ onNavigate }: { onNavigate?: (target: number) => void }) => {
 
                     {/* Masaüstü Sağ Tərəf: Buton + Dil Seçimi */}
                     <div className="hidden lg:flex items-center space-x-3 font-montserrat xl:space-x-5">
-                        <a 
-                            href="https://wa.me/994559242562" 
+                        <a
+                            href="https://wa.me/994559242562"
                             target="_blank"
                             rel="noreferrer"
                             className="relative inline-flex items-center justify-center gap-2 bg-white text-black font-medium px-4 py-2.5 text-sm rounded-[10px] shadow-lg overflow-hidden outline outline-1 outline-transparent hover:outline-black/20 transition-colors duration-500 ease-in-out group cursor-pointer xl:px-5 xl:py-3 xl:text-base"
@@ -244,7 +323,7 @@ const Navbar = ({ onNavigate }: { onNavigate?: (target: number) => void }) => {
 
                         {/* Dil Seçimi (Dropdown) */}
                         <div className="relative font-montserrat" ref={langDropdownRef}>
-                            <button 
+                            <button
                                 onClick={() => setLangOpen(!langOpen)}
                                 className="flex items-center space-x-1.5 text-white/90 hover:text-white px-1.5 py-2 transition-colors text-sm font-normal cursor-pointer xl:px-2 xl:text-base"
                                 aria-label="Change language"
@@ -278,8 +357,8 @@ const Navbar = ({ onNavigate }: { onNavigate?: (target: number) => void }) => {
 
                     {/* Planşet və Mobil üçün Hamburger Butonu */}
                     <div className="lg:hidden flex items-center">
-                        <button 
-                            onClick={() => setIsOpen(true)} 
+                        <button
+                            onClick={() => setIsOpen(true)}
                             className="text-white focus:outline-none p-2 rounded-lg hover:bg-white/10 transition-colors cursor-pointer"
                             aria-label="Toggle Menu"
                         >
@@ -289,10 +368,10 @@ const Navbar = ({ onNavigate }: { onNavigate?: (target: number) => void }) => {
                 </nav>
 
                 {/* Mobil Menyu (İstədiyiniz orijinal dizayn və keçidlərlə) */}
-                <div 
+                <div
                     className={`fixed inset-0 z-50 bg-[#FAF7F2] text-black flex flex-col justify-between py-8 transition-all duration-700 ease-in-out ${
-                        isOpen 
-                            ? 'opacity-100 pointer-events-auto [clip-path:circle(150%_at_100%_0%)]' 
+                        isOpen
+                            ? 'opacity-100 pointer-events-auto [clip-path:circle(150%_at_100%_0%)]'
                             : 'opacity-0 pointer-events-none [clip-path:circle(0%_at_100%_0%)]'
                     }`}
                 >
@@ -301,8 +380,8 @@ const Navbar = ({ onNavigate }: { onNavigate?: (target: number) => void }) => {
                         <div className="flex items-center">
                             <img src={logo} alt={dict.navbar.logoAlt} className="object-contain max-w-44" />
                         </div>
-                        <button 
-                            onClick={() => setIsOpen(false)} 
+                        <button
+                            onClick={() => setIsOpen(false)}
                             className="bg-black text-white p-2.5 rounded-lg hover:bg-black/80 transition-colors cursor-pointer"
                             aria-label="Close Menu"
                         >
@@ -311,7 +390,7 @@ const Navbar = ({ onNavigate }: { onNavigate?: (target: number) => void }) => {
                     </div>
 
                     {/* 1. Xətt: Soldan sağa açılır */}
-                    <div 
+                    <div
                         className={`w-full h-[1px] bg-black/20 origin-left transition-transform duration-500 ease-out ${
                             isOpen ? 'scale-x-100' : 'scale-x-0'
                         }`}
@@ -319,7 +398,7 @@ const Navbar = ({ onNavigate }: { onNavigate?: (target: number) => void }) => {
                     ></div>
 
                     {/* 2. Səhifə Adları */}
-                    <div 
+                    <div
                         className={`flex flex-col items-center justify-center space-y-6 text-center font-playfair my-auto transform transition-all duration-700 ease-out ${
                             isOpen ? 'opacity-100 translate-y-0 blur-none' : 'opacity-0 translate-y-8 blur-sm'
                         }`}
@@ -332,9 +411,9 @@ const Navbar = ({ onNavigate }: { onNavigate?: (target: number) => void }) => {
                             { href: '#portfolio', label: dict.navbar.portfolio },
                             { href: '#contact', label: dict.navbar.contact },
                         ].map(({ href, label }) => (
-                            <a 
+                            <a
                                 key={href}
-                                href={href} 
+                                href={href}
                                 onClick={(e) => handleNavClick(e, href)}
                                 className="text-2xl sm:text-3xl font-normal text-black/80 hover:text-black tracking-wide transition-colors"
                             >
@@ -345,9 +424,9 @@ const Navbar = ({ onNavigate }: { onNavigate?: (target: number) => void }) => {
 
                     {/* Alt Hissə: Əlaqə məlumatları, Xəttlər və Sosial Şəbəkələr */}
                     <div className="w-full max-w-md mx-auto px-6 space-y-6 font-montserrat">
-                        
+
                         {/* 3. Xətt (Mailin üstü) */}
-                        <div 
+                        <div
                             className={`w-full h-[1px] bg-black/25 origin-right transition-transform duration-500 ease-out ${
                                 isOpen ? 'scale-x-100' : 'scale-x-0'
                             }`}
@@ -355,7 +434,7 @@ const Navbar = ({ onNavigate }: { onNavigate?: (target: number) => void }) => {
                         ></div>
 
                         {/* 4. Mail */}
-                        <div 
+                        <div
                             className={`text-center space-y-1 w-full transform transition-all duration-700 ease-out ${
                                 isOpen ? 'opacity-100 translate-y-0 blur-none' : 'opacity-0 translate-y-8 blur-sm'
                             }`}
@@ -367,7 +446,7 @@ const Navbar = ({ onNavigate }: { onNavigate?: (target: number) => void }) => {
                         </div>
 
                         {/* 5. Xətt (Mailin altı) */}
-                        <div 
+                        <div
                             className={`w-full h-[1px] bg-black/25 origin-left transition-transform duration-500 ease-out ${
                                 isOpen ? 'scale-x-100' : 'scale-x-0'
                             }`}
@@ -375,14 +454,14 @@ const Navbar = ({ onNavigate }: { onNavigate?: (target: number) => void }) => {
                         ></div>
 
                         {/* 6. Əlaqə saxla + Sosial Media */}
-                        <div 
+                        <div
                             className={`flex items-center justify-between pt-2 transform transition-all duration-700 ease-out ${
                                 isOpen ? 'opacity-100 translate-y-0 blur-none' : 'opacity-0 translate-y-8 blur-sm'
                             }`}
                             style={{ transitionDelay: isOpen ? '1300ms' : '0ms' }}
                         >
-                            <a 
-                                href="https://wa.me/994559242562" 
+                            <a
+                                href="https://wa.me/994559242562"
                                 target="_blank"
                                 rel="noreferrer"
                                 className="flex items-center justify-center gap-2 bg-[#0B132B] text-white px-5 py-3 rounded-xl shadow-md text-md font-semibold hover:bg-black transition-colors"
@@ -402,7 +481,7 @@ const Navbar = ({ onNavigate }: { onNavigate?: (target: number) => void }) => {
                         </div>
 
                         {/* 7. Dil Seçimi */}
-                        <div 
+                        <div
                             className={`flex items-center justify-center space-x-3 text-md font-normal pt-2 text-black/70 font-montserrat transform transition-all duration-700 ease-out ${
                                 isOpen ? 'opacity-100 translate-y-0 blur-none' : 'opacity-0 translate-y-8 blur-sm'
                             }`}

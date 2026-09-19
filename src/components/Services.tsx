@@ -81,10 +81,10 @@ export default function SeasonsSection() {
   };
 
   return (
-    <section id="services" className="relative w-full h-screen  text-black overflow-hidden flex flex-col justify-between py-6">
+    <section id="services" className="relative w-full h-screen text-black overflow-hidden flex flex-col justify-between py-2">
       
       {/* Yuxarı Başlıq Hissəsi */}
-      <div className="relative z-20 max-w-4xl mx-auto text-center px-4 shrink-0">
+      <div className="relative z-20 max-w-4xl mx-auto text-center px-4 py-4 shrink-0">
         <BlurText
           text={dict.services.title}
           animateBy="words"
@@ -105,7 +105,7 @@ export default function SeasonsSection() {
       </div>
 
       {/* ================= DESKTOP: 100vh Daxilində 4 Sütun (Hər xidmətin özünün video sahəsi) ================= */}
-      <div className="relative z-10 hidden md:grid grid-cols-4 w-full h-[calc(100vh-140px)] border-t border-b border-white/20">
+      <div className="relative z-10 hidden md:grid grid-cols-4 w-full h-[calc(100vh-130px)] border-t border-b border-white/20">
         {servicesData.map((service, index) => {
           const isHovered = hoveredIndex === index;
 
@@ -160,8 +160,8 @@ export default function SeasonsSection() {
       </div>
 
       {/* ================= MOBİL: SLAYDER GÖRÜNÜŞÜ ================= */}
-      <div className="relative z-10 md:hidden px-4 flex flex-col justify-center my-auto">
-        <div className="relative mx-auto h-[min(60vh,480px)] aspect-[9/16] rounded-2xl overflow-hidden border border-white/20 p-5 flex flex-col justify-between mb-3 shadow-2xl">
+      <div className="relative z-10 md:hidden flex flex-col flex-1 min-h-0 justify-center gap-2">
+        <div className="relative flex-1 min-h-0 overflow-hidden border border-white/20 p-3 flex flex-col justify-between shadow-2xl">
           {/* Mobil video arxa fon */}
           <div className="absolute inset-0 -z-10">
             <video
@@ -191,7 +191,7 @@ export default function SeasonsSection() {
         </div>
 
         {/* Mobil ox düymələri */}
-        <div className="flex items-center justify-end gap-3 px-2">
+        <div className="flex items-center justify-end gap-3 pr-4 md:pr-6">
           <button
             onClick={handlePrev}
             aria-label={dict.services.prevLabel}
