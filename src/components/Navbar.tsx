@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, ChevronDown, Phone } from 'lucide-react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -22,12 +22,58 @@ const getInitialLogoWidth = () => {
     return 288;
 };
 
-const LETTERS = [
-    { src: moveM, alt: 'M' },
-    { src: moveO, alt: 'O' },
-    { src: moveV, alt: 'V' },
-    { src: moveE, alt: 'E' },
-];
+const LETTERS: Record<string, { src: string; alt: string }> = {
+    M: { src: moveM, alt: 'M' },
+    O: { src: moveO, alt: 'O' },
+    V: { src: moveV, alt: 'V' },
+    E: { src: moveE, alt: 'E' },
+};
+
+// Hərflər əvvəlcə plitənin SOLUNDA sıralanır: əvvəl M (ən sağda, plitəyə yaxın),
+// sonra O, V, E onun soluna — nəticədə soldan-sağa "EVOM" görünür. Hamısı gələndən
+// sonra isə plitə üzərinə bir-bir keçir: M əvvəlcə slide-in olur, o öz yerinə
+// çatdıqdan sonra O, sonra V, sonra E — hamısı eyni anda yox, ard-arda.
+const STAGING_ORDER = ['E', 'V', 'O', 'M'];
+const FINAL_ORDER = ['M', 'O', 'V', 'E'];
+const ENTRY_PHASE: Record<string, number> = { M: 2, O: 3, V: 4, E: 5 };
+
+// Hərf ölçüləri və mövqeləri plitə genişliyinin faizi kimi hesablanır ki,
+// animasiya istənilən ekran ölçüsündə eyni görünsün.
+const LETTER_RATIO: Record<string, number> = {
+    M: 79 / 54,
+    O: 72 / 56,
+    V: 68 / 54,
+    E: 57 / 54,
+};
+// Hərf hündürlüyü əvvəlki kimi plitə hündürlüyünün 36.5%-idir — şrift ölçüsü dəyişmir.
+const LETTER_HEIGHT_PCT = 36.5;
+
+// Ofset hesabları üçün hərf enləri plitə ENİNİN faizi kimi ayrıca tapılır
+// (CSS-də height % plitə hündürlüyünə işlədiyindən görünüşü dəyişmir).
+const letterHeightVsPlateWidth = ((LETTER_HEIGHT_PCT / 100) * (75 / 470) * 100) / (44.26 / 100); // ≈13.16%
+
+const LETTER_WIDTH: Record<string, number> = {
+    M: LETTER_RATIO.M * letterHeightVsPlateWidth,
+    O: LETTER_RATIO.O * letterHeightVsPlateWidth,
+    V: LETTER_RATIO.V * letterHeightVsPlateWidth,
+    E: LETTER_RATIO.E * letterHeightVsPlateWidth,
+};
+
+function computeLineOffsets(order: string[], gapPct: number): Record<string, number> {
+    const total = order.reduce((s, l) => s + LETTER_WIDTH[l], 0) + gapPct * (order.length - 1);
+    let cur = (100 - total) / 2;
+    const out: Record<string, number> = {};
+    order.forEach((l) => {
+        out[l] = cur;
+        cur += LETTER_WIDTH[l] + gapPct;
+    });
+    return out;
+}
+
+// Final yığılma: hər hərf özündən əvvəlki yerinə çatdıqdan SONRA başlayır,
+// ona görə hərflər arası fasilə (FINAL_DEFER) slide müddətindən (FINAL_SLIDE) böyükdür.
+const FINAL_DEFER = 360; // ms
+const FINAL_SLIDE = 320; // ms
 
 const Navbar = ({ onNavigate }: { onNavigate?: (target: number) => void }) => {
     const { locale, dict } = useLocale();
@@ -41,6 +87,15 @@ const Navbar = ({ onNavigate }: { onNavigate?: (target: number) => void }) => {
     const [logoMoving, setLogoMoving] = useState(false);
     const [animationTarget, setAnimationTarget] = useState({ x: 0, y: 0, width: getInitialLogoWidth(), height: getInitialLogoWidth() * (75 / 470) });
     const [initialLogoWidth] = useState(getInitialLogoWidth);
+    // Hərflər arası məsafə dəqiq 2px olsun deyə boşluq plitə eninin faizinə çevrilir.
+    const gapPct = (2 / (initialLogoWidth * (44.26 / 100))) * 100;
+    const { stagedLeft, finalLeft } = useMemo(() => {
+        const staged = computeLineOffsets(STAGING_ORDER, gapPct);
+        STAGING_ORDER.forEach((l) => {
+            staged[l] -= 100; // "EVOM" sətri plitədən bir tam en sola
+        });
+        return { stagedLeft: staged, finalLeft: computeLineOffsets(FINAL_ORDER, gapPct) };
+    }, [gapPct]);
     const [phase, setPhase] = useState(0);
     const [assembled, setAssembled] = useState(false);
 
@@ -60,7 +115,7 @@ const Navbar = ({ onNavigate }: { onNavigate?: (target: number) => void }) => {
     // Progress counter (rAF ilə — interval throttling-i səbəbindən ilişib qalmır)
     useEffect(() => {
         const start = performance.now();
-        const duration = 1680;
+        const duration = 2600;
         let rafId = 0;
 
         const tick = (now: number) => {
@@ -79,23 +134,27 @@ const Navbar = ({ onNavigate }: { onNavigate?: (target: number) => void }) => {
         return () => clearTimeout(failSafe);
     }, []);
 
-    // Logo assembly: move_bg -> (fasilə) -> hərflər (M O V E) -> agency
+    // Logo assembly: move_bg -> (fasilə) -> hərflər EVOM istiqamətində sola -> 
+    // M slide-in, o gələndən sonra O, V, E bir-bir -> agency
     useEffect(() => {
         const BG_START = 35;        // bg-nin başlama vaxtı
         const BG_DURATION = 245;    // bg animasiyasının müddəti (transition ilə eyni)
-        const PAUSE = 200;          // bg gəldikdən sonra gözləmə  <-- bunu artırıb/azalda bilərsən
-        const LETTER_STEP = 350;    // hərflər arası interval
+        const PAUSE = 160;          // bg gəldikdən sonra gözləmə  <-- bunu artırıb/azalda bilərsən
+        const LETTER_STEP = 300;    // staging-də hərflər arası interval
+        const ASSEMBLY_PAUSE = 220; // E staging-ə gəldikdən sonra fasilə
 
-        const firstLetter = BG_START + BG_DURATION + PAUSE; // 680ms
+        const firstLetter = BG_START + BG_DURATION + PAUSE; // 440ms
+        const assemblyStart = firstLetter + LETTER_STEP * 3 + ASSEMBLY_PAUSE; // 1560ms
         const times = [
-            BG_START,                       // phase 1: bg
-            firstLetter,                    // phase 2: M
-            firstLetter + LETTER_STEP,      // phase 3: O
-            firstLetter + LETTER_STEP * 2,  // phase 4: V
-            firstLetter + LETTER_STEP * 3,  // phase 5: E
-            firstLetter + LETTER_STEP * 4,  // phase 6: agency
+            BG_START,                    // phase 1: bg
+            firstLetter,                 // phase 2: M  (EVOM-un ən sağında, plitəyə yaxın)
+            firstLetter + LETTER_STEP,   // phase 3: O  (M-in soluna)
+            firstLetter + LETTER_STEP * 2, // phase 4: V  (O-nun soluna)
+            firstLetter + LETTER_STEP * 3, // phase 5: E  -> "EVOM" plitənin solunda yığılır
+            assemblyStart,               // phase 6: M slide-in, o gəldikdən sonra O, sonra V, sonra E
+            assemblyStart + FINAL_DEFER * 3 + FINAL_SLIDE + 60, // phase 7: agency
         ];
-        const assembledAt = times[5] + 420; // agency animasiyası bitəndən sonra
+        const assembledAt = times[6] + 420; // agency animasiyası bitəndən sonra
 
         const timers = times.map((t, i) => setTimeout(() => setPhase(i + 1), t));
         const done = setTimeout(() => setAssembled(true), assembledAt);
@@ -195,7 +254,7 @@ const Navbar = ({ onNavigate }: { onNavigate?: (target: number) => void }) => {
                         {/* CENTER LOGO — yığılma animasiyası */}
                         <motion.div
                             aria-hidden="true"
-                            className="fixed left-1/2 top-1/2 flex items-center justify-center pointer-events-none"
+                            className="relative fixed left-1/2 top-1/2 flex items-center justify-center pointer-events-none"
                             style={{ aspectRatio: '470 / 75' }}
                             initial={{
                                 x: "-50%",
@@ -222,27 +281,59 @@ const Navbar = ({ onNavigate }: { onNavigate?: (target: number) => void }) => {
                         >
                             {/* move_bg — solid color plitə */}
                             <motion.div
-                                className="relative flex items-center justify-center gap-[2px] bg-[#1C2222]"
+                                className="relative bg-[#1C2222]"
                                 style={{ width: '44.26%', height: '100%' }}
                                 initial={{ x: '-70vw', opacity: 0 }}
                                 animate={phase >= 1 ? { x: '0%', opacity: 1 } : { x: '-70vw', opacity: 0 }}
                                 transition={{ duration: 0.245, ease: [0.76, 0, 0.24, 1] }}
                             >
-                                {LETTERS.map(({ src, alt }, i) => (
-                                    <motion.img
-                                        key={alt}
-                                        src={src}
-                                        alt={alt}
-                                        style={{ height: '36.5%', width: 'auto' }}
-                                        initial={{ x: '-300%', opacity: 0 }}
-                                        animate={
-                                            phase >= i + 2
-                                                ? { x: '0%', opacity: 1 }
-                                                : { x: '-300%', opacity: 0 }
-                                        }
-                                        transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-                                    />
-                                ))}
+                                {/* Hərflər əvvəlcə plitənin solunda "EVOM" kimi sıralanır;
+                                    Finalda isə M əvvəlcə slide-in olur, o öz yerinə çatdıqdan
+                                    sonra O, sonra V, sonra E bir-bir keçir (hamısı eyni anda yox). */}
+                                {FINAL_ORDER.map((letter, fi) => {
+                                    const { src, alt } = LETTERS[letter];
+                                    const entered = phase >= ENTRY_PHASE[letter] || phase >= 6;
+                                    const isFinal = phase >= 6;
+                                    return (
+                                        <motion.img
+                                            key={alt}
+                                            src={src}
+                                            alt={alt}
+                                            style={{
+                                                position: 'absolute',
+                                                top: `${(100 - LETTER_HEIGHT_PCT) / 2}%`,
+                                                height: `${LETTER_HEIGHT_PCT}%`,
+                                                width: 'auto',
+                                            }}
+                                            initial={false}
+                                            animate={
+                                                isFinal
+                                                    ? {
+                                                          x: '0%',
+                                                          left: `${finalLeft[letter]}%`,
+                                                          opacity: 1,
+                                                          transition: {
+                                                              left: {
+                                                                  duration: FINAL_SLIDE / 1000,
+                                                                  delay: (fi * FINAL_DEFER) / 1000,
+                                                                  ease: [0.16, 1, 0.3, 1],
+                                                              },
+                                                              opacity: { duration: 0.15 },
+                                                          },
+                                                      }
+                                                    : {
+                                                          left: `${stagedLeft[letter]}%`,
+                                                          x: entered ? '0%' : '-200%',
+                                                          opacity: entered ? 1 : 0,
+                                                          transition: {
+                                                              x: { duration: 0.5, ease: [0.16, 1, 0.3, 1] },
+                                                              opacity: { duration: 0.35 },
+                                                          },
+                                                      }
+                                            }
+                                        />
+                                    );
+                                })}
                             </motion.div>
 
                             {/* agency — sağdan-sola gəlib yapışır */}
@@ -252,7 +343,7 @@ const Navbar = ({ onNavigate }: { onNavigate?: (target: number) => void }) => {
                                 className="h-full w-auto object-contain"
                                 style={{ width: '55.74%' }}
                                 initial={{ x: '70vw', opacity: 0 }}
-                                animate={phase >= 6 ? { x: '0%', opacity: 1 } : { x: '70vw', opacity: 0 }}
+                                animate={phase >= 7 ? { x: '0%', opacity: 1 } : { x: '70vw', opacity: 0 }}
                                 transition={{ duration: 0.35, ease: [0.76, 0, 0.24, 1] }}
                             />
                         </motion.div>

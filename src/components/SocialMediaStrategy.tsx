@@ -4,7 +4,7 @@ const SocialMediaStrategy = () => {
   return (
     <section id="social-media-strategy" className="relative h-[60svh] md:h-[60vh] w-full overflow-hidden">
       <video
-        className="absolute inset-0 h-full w-full object-cover object-[80%_center]"
+        className="absolute inset-0 h-full w-full object-cover object-[80%_25%]"
         src={socialMediaVideo}
         autoPlay
         loop
