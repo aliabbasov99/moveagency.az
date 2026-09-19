@@ -39,7 +39,7 @@ const Navbar = ({ onNavigate }: { onNavigate?: (target: number) => void }) => {
     const [loading, setLoading] = useState(true);
     const [progress, setProgress] = useState(0);
     const [logoMoving, setLogoMoving] = useState(false);
-    const [animationTarget, setAnimationTarget] = useState({ x: 0, y: 0, width: getInitialLogoWidth() });
+    const [animationTarget, setAnimationTarget] = useState({ x: 0, y: 0, width: getInitialLogoWidth(), height: getInitialLogoWidth() * (75 / 470) });
     const [initialLogoWidth] = useState(getInitialLogoWidth);
     const [phase, setPhase] = useState(0);
     const [assembled, setAssembled] = useState(false);
@@ -121,6 +121,7 @@ const Navbar = ({ onNavigate }: { onNavigate?: (target: number) => void }) => {
                 x: logoCenterX - screenCenterX,
                 y: logoCenterY - screenCenterY,
                 width: rect.width,
+                height: rect.height,
             });
         }
 

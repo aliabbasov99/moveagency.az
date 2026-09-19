@@ -67,6 +67,7 @@ function ReelCard({ reel, isPlaying, onTogglePlay }: ReelCardProps) {
 
     if (isPlaying) {
       video.pause();
+      video.currentTime = 0;
       onTogglePlay();
     } else {
       video.volume = 1.0;
@@ -111,7 +112,11 @@ function ReelCard({ reel, isPlaying, onTogglePlay }: ReelCardProps) {
       />
       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/5 to-transparent pointer-events-none" />
 
-      <div className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+      <div
+        className={`absolute inset-0 flex items-center justify-center transition-opacity duration-300 ${
+          isPlaying ? "opacity-0 group-hover:opacity-100" : "opacity-100"
+        }`}
+      >
         <span className="w-14 h-14 rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center text-white">
           {isPlaying ? (
             <Pause className="w-6 h-6" />
