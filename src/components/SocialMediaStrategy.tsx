@@ -1,4 +1,4 @@
-const socialMediaVideo = "https://res.cloudinary.com/ta8jgr46/video/upload/v1789738052/social_media_strategy_online-video-cutter.com.mp4"
+const socialMediaVideo = "https://res.cloudinary.com/ta8jgr46/video/upload/v1789831485/WhatsApp_Video_2026-09-19_at_7.16.53_PM.mp4"
 
 const SocialMediaStrategy = () => {
   return (
