@@ -81,7 +81,7 @@ export default function SeasonsSection() {
   };
 
   return (
-    <section id="services" className="relative w-full h-screen text-black overflow-hidden flex flex-col justify-between py-2">
+    <section id="services" className="relative w-full h-auto md:h-screen text-black md:overflow-hidden flex flex-col justify-between py-2">
       
       {/* Yuxarı Başlıq Hissəsi */}
       <div className="relative z-20 max-w-4xl mx-auto text-center px-4 py-4 shrink-0">
@@ -161,7 +161,7 @@ export default function SeasonsSection() {
 
       {/* ================= MOBİL: SLAYDER GÖRÜNÜŞÜ ================= */}
       <div className="relative z-10 md:hidden flex flex-col flex-1 min-h-0 justify-center gap-2">
-        <div className="relative flex-1 min-h-0 overflow-hidden border border-white/20 p-3 flex flex-col justify-between shadow-2xl">
+        <div className="relative w-full aspect-[3/4] max-h-[75dvh] self-center overflow-hidden border border-white/20 p-3 flex flex-col justify-between shadow-2xl">
           {/* Mobil video arxa fon */}
           <div className="absolute inset-0 -z-10">
             <video

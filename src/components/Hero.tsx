@@ -3,7 +3,7 @@ const marketingVertical = "https://res.cloudinary.com/ta8jgr46/video/upload/v178
 
 const Hero = () => {
   return (
-    <section id="home" className="relative h-[100svh] md:h-screen w-full overflow-hidden">
+    <section id="home" className="relative h-[60svh] md:h-[60vh] w-full overflow-hidden">
       {/* PC: horizontal video */}
       <video
         className="absolute inset-0 hidden h-full w-full object-cover md:block"
