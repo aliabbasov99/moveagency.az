@@ -2,7 +2,7 @@ const socialMediaVideo = "https://res.cloudinary.com/ta8jgr46/video/upload/v1789
 
 const SocialMediaStrategy = () => {
   return (
-    <section id="social-media-strategy" className="relative h-[60svh] md:h-[60vh] w-full overflow-hidden">
+    <section id="social-media-strategy" className="relative h-[60svh] md:hidden md:h-[60vh] w-full overflow-hidden">
       <video
         className="absolute inset-0 h-full w-full object-cover object-[80%_25%]"
         src={socialMediaVideo}
