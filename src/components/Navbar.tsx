@@ -29,13 +29,12 @@ const LETTERS: Record<string, { src: string; alt: string }> = {
     E: { src: moveE, alt: 'E' },
 };
 
-// Hərflər əvvəlcə plitənin SOLUNDA sıralanır: əvvəl M (ən sağda, plitəyə yaxın),
-// sonra O, V, E onun soluna — nəticədə soldan-sağa "EVOM" görünür. Hamısı gələndən
-// sonra isə plitə üzərinə bir-bir keçir: M əvvəlcə slide-in olur, o öz yerinə
-// çatdıqdan sonra O, sonra V, sonra E — hamısı eyni anda yox, ard-arda.
+// Hərflərə əvvəlcə 4-ü birdən plitənin SOLUNDA yığılır: soldan-sağa "EVOM".
+// Hamısı ekranın sol kənarından (ekran xaricindən) uçub gəlir — yoxdan var olmur.
+// Hamısı gələndən sonra isə plitə üzərinə bir-bir keçir: M əvvəlcə slide-in olur,
+// o öz yerinə çatdıqdan sonra O, sonra V, sonra E — hamısı eyni anda yox, ard-arda.
 const STAGING_ORDER = ['E', 'V', 'O', 'M'];
 const FINAL_ORDER = ['M', 'O', 'V', 'E'];
-const ENTRY_PHASE: Record<string, number> = { M: 2, O: 3, V: 4, E: 5 };
 
 // Hərf ölçüləri və mövqeləri plitə genişliyinin faizi kimi hesablanır ki,
 // animasiya istənilən ekran ölçüsündə eyni görünsün.
@@ -74,6 +73,9 @@ function computeLineOffsets(order: string[], gapPct: number): Record<string, num
 // ona görə hərflər arası fasilə (FINAL_DEFER) slide müddətindən (FINAL_SLIDE) böyükdür.
 const FINAL_DEFER = 360; // ms
 const FINAL_SLIDE = 320; // ms
+
+// Hərflərin ekranın solundan plitənin solundakı yerinə uçuş müddəti
+const FLY_IN_DURATION = 0.5; // s
 
 const Navbar = ({ onNavigate }: { onNavigate?: (target: number) => void }) => {
     const { locale, dict } = useLocale();
@@ -134,27 +136,24 @@ const Navbar = ({ onNavigate }: { onNavigate?: (target: number) => void }) => {
         return () => clearTimeout(failSafe);
     }, []);
 
-    // Logo assembly: move_bg -> (fasilə) -> hərflər EVOM istiqamətində sola -> 
+    // Logo assembly: move_bg -> (fasilə) -> 4 hərf ekranın solundan birdən uçub gəlir ->
     // M slide-in, o gələndən sonra O, V, E bir-bir -> agency
     useEffect(() => {
         const BG_START = 35;        // bg-nin başlama vaxtı
         const BG_DURATION = 245;    // bg animasiyasının müddəti (transition ilə eyni)
-        const PAUSE = 160;          // bg gəldikdən sonra gözləmə  <-- bunu artırıb/azalda bilərsən
-        const LETTER_STEP = 300;    // staging-də hərflər arası interval
-        const ASSEMBLY_PAUSE = 220; // E staging-ə gəldikdən sonra fasilə
+        const PAUSE = 160;          // bg gəldikdən sonra gözləmə
+        // Hərflərin uçuş müddəti + kiçik nəfəs — M slide-in hərflər çatmamış başlamasın
+        const ASSEMBLY_PAUSE = FLY_IN_DURATION * 1000 + 120;
 
         const firstLetter = BG_START + BG_DURATION + PAUSE; // 440ms
-        const assemblyStart = firstLetter + LETTER_STEP * 3 + ASSEMBLY_PAUSE; // 1560ms
+        const assemblyStart = firstLetter + ASSEMBLY_PAUSE; // 1060ms
         const times = [
             BG_START,                    // phase 1: bg
-            firstLetter,                 // phase 2: M  (EVOM-un ən sağında, plitəyə yaxın)
-            firstLetter + LETTER_STEP,   // phase 3: O  (M-in soluna)
-            firstLetter + LETTER_STEP * 2, // phase 4: V  (O-nun soluna)
-            firstLetter + LETTER_STEP * 3, // phase 5: E  -> "EVOM" plitənin solunda yığılır
-            assemblyStart,               // phase 6: M slide-in, o gəldikdən sonra O, sonra V, sonra E
-            assemblyStart + FINAL_DEFER * 3 + FINAL_SLIDE + 60, // phase 7: agency
+            firstLetter,                 // phase 2: 4 hərf ekranın solundan uçub gəlir ("EVOM")
+            assemblyStart,               // phase 3: M slide-in, o gəldikdən sonra O, sonra V, sonra E
+            assemblyStart + FINAL_DEFER * 3 + FINAL_SLIDE + 60, // phase 4: agency
         ];
-        const assembledAt = times[6] + 420; // agency animasiyası bitəndən sonra
+        const assembledAt = times[3] + 420; // agency animasiyası bitəndən sonra
 
         const timers = times.map((t, i) => setTimeout(() => setPhase(i + 1), t));
         const done = setTimeout(() => setAssembled(true), assembledAt);
@@ -287,13 +286,14 @@ const Navbar = ({ onNavigate }: { onNavigate?: (target: number) => void }) => {
                                 animate={phase >= 1 ? { x: '0%', opacity: 1 } : { x: '-70vw', opacity: 0 }}
                                 transition={{ duration: 0.245, ease: [0.76, 0, 0.24, 1] }}
                             >
-                                {/* Hərflər əvvəlcə plitənin solunda "EVOM" kimi sıralanır;
+                                {/* Hərflər ekranın sol kənarından (ekran xaricindən) birlikdə uçub
+                                    plitənin solunda "EVOM" kimi sıralanır;
                                     Finalda isə M əvvəlcə slide-in olur, o öz yerinə çatdıqdan
                                     sonra O, sonra V, sonra E bir-bir keçir (hamısı eyni anda yox). */}
                                 {FINAL_ORDER.map((letter, fi) => {
                                     const { src, alt } = LETTERS[letter];
-                                    const entered = phase >= ENTRY_PHASE[letter] || phase >= 6;
-                                    const isFinal = phase >= 6;
+                                    const isFinal = phase >= 3;
+                                    const arrived = phase >= 2; // 2-ci fazada 4 hərf birlikdə ekranın solundan gəlir
                                     return (
                                         <motion.img
                                             key={alt}
@@ -309,7 +309,7 @@ const Navbar = ({ onNavigate }: { onNavigate?: (target: number) => void }) => {
                                             animate={
                                                 isFinal
                                                     ? {
-                                                          x: '0%',
+                                                          x: '0vw',
                                                           left: `${finalLeft[letter]}%`,
                                                           opacity: 1,
                                                           transition: {
@@ -318,16 +318,15 @@ const Navbar = ({ onNavigate }: { onNavigate?: (target: number) => void }) => {
                                                                   delay: (fi * FINAL_DEFER) / 1000,
                                                                   ease: [0.16, 1, 0.3, 1],
                                                               },
-                                                              opacity: { duration: 0.15 },
                                                           },
                                                       }
                                                     : {
                                                           left: `${stagedLeft[letter]}%`,
-                                                          x: entered ? '0%' : '-200%',
-                                                          opacity: entered ? 1 : 0,
+                                                          // ekranın xaricindən (sol tərəf) plitənin solundakı yerinə qədər uçur
+                                                          x: arrived ? '0vw' : '-100vw',
+                                                          opacity: 1, // fade yoxdur — hərəkət tam görünür
                                                           transition: {
-                                                              x: { duration: 0.5, ease: [0.16, 1, 0.3, 1] },
-                                                              opacity: { duration: 0.35 },
+                                                              x: { duration: FLY_IN_DURATION, ease: [0.22, 1, 0.36, 1] },
                                                           },
                                                       }
                                             }
@@ -343,7 +342,7 @@ const Navbar = ({ onNavigate }: { onNavigate?: (target: number) => void }) => {
                                 className="h-full w-auto object-contain"
                                 style={{ width: '55.74%' }}
                                 initial={{ x: '70vw', opacity: 0 }}
-                                animate={phase >= 7 ? { x: '0%', opacity: 1 } : { x: '70vw', opacity: 0 }}
+                                animate={phase >= 4 ? { x: '0%', opacity: 1 } : { x: '70vw', opacity: 0 }}
                                 transition={{ duration: 0.35, ease: [0.76, 0, 0.24, 1] }}
                             />
                         </motion.div>
