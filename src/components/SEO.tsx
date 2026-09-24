@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import BlurText from "./BlurText";
 import { useLocale } from "../locales/useLocale";
 import logo from "../assets/img/static/ma_logo.webp";
-import SEOBg from  "../assets/img/static/footer_bg.jpeg"
+import SEOBgVideo from  "../assets/img/static/footer_bg_video.mp4"
 export default function ProjectStickyHero() {
   const { dict } = useLocale();
   const sectionRef = useRef<HTMLDivElement>(null);
@@ -64,9 +64,12 @@ export default function ProjectStickyHero() {
         className="absolute inset-0"
         style={{ clipPath: clipPathValue, WebkitClipPath: clipPathValue }}
       >
-        <img
-          src={SEOBg}
-          alt=""
+        <video
+          src={SEOBgVideo}
+          autoPlay
+          muted
+          loop
+          playsInline
           className="w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-black/30" />

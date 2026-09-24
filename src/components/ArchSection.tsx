@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import BlurText from "./BlurText";
-import { Pause, Play, Volume2, VolumeX } from "lucide-react";
+import { Volume2, VolumeX } from "lucide-react";
 import { useLocale } from '../locales/useLocale';
 
 interface ReelItem {
@@ -106,18 +106,6 @@ function ReelCard({ reel, isActive, isTouch, soundOn, onToggleSound, cardRef, on
         className="w-full h-full object-cover"
       />
       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/5 to-transparent pointer-events-none" />
-
-      {!isTouch && (
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <span className="w-14 h-14 rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center text-white">
-            {isActive ? (
-              <Pause className="w-6 h-6" />
-            ) : (
-              <Play className="w-6 h-6 ml-0.5" fill="currentColor" />
-            )}
-          </span>
-        </div>
-      )}
 
       {/* Hər video üçün öz səs butonu (vahid state ilə) */}
       <button

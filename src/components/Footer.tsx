@@ -122,7 +122,7 @@ const Footer = ({ onNavigate }: { onNavigate?: (target: number) => void }) => {
                 <div className="w-full h-[1px] bg-[#0B132B]/15" />
 
                 {/* Alt hissə */}
-                <div className="pt-6 flex flex-col items-center gap-4 lg:flex-row lg:justify-between font-montserrat">
+                <div className="pt-6 flex flex-col items-center gap-4 lg:flex-row lg:justify-end font-montserrat">
                     <div className="flex items-center gap-6 text-xs sm:text-sm text-[#0B132B]/70">
                         <Link to={getLocalizedPath(locale, '/mexfilik-siyaseti')} className="hover:text-[#0B132B] transition-colors">
                             <BlurText 
@@ -145,18 +145,6 @@ const Footer = ({ onNavigate }: { onNavigate?: (target: number) => void }) => {
                             />
                         </Link>
                     </div>
-
-                    <a
-                        href="https://promar.az"
-                        target="_blank"
-                        rel="noreferrer"
-                        className="group flex items-center gap-2 text-xs sm:text-sm"
-                    >
-                        <span className="text-[10px] sm:text-xs text-[#0B132B]/45">{dict.footer.siteBuilder}</span>
-                        <span className="font-semibold text-[#0B132B] group-hover:underline underline-offset-4">
-                            Promar
-                        </span>
-                    </a>
                 </div>
             </div>
         </footer>
