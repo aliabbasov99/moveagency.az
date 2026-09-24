@@ -53,7 +53,7 @@ try {
     console.log(`${path}: title=${seo.title.length}, description=${seo.description.length}; HTML, dil, schema və resurslar yoxlanıldı`)
   }
   assert.equal((sitemap.match(/<url>/g) || []).length, seoPaths.length)
-  assert.ok(robots.includes('Sitemap: https://moveagency.az/sitemap.xml'))
+  assert.ok(robots.includes('Sitemap: https://www.moveagency.az/sitemap.xml'))
   assert.equal(await readFile('dist/favicon.svg', 'utf8'), await readFile('public/favicon.svg', 'utf8'))
   assert.equal(getLocalizedPath('ru', '/en/mexfilik-siyaseti'), '/ru/mexfilik-siyaseti')
   assert.equal(getLocalizedPath('az', '/ru'), '/')

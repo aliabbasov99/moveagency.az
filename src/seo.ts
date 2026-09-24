@@ -3,7 +3,7 @@ import { getDictForLocale } from './locales/dict'
 import logo from './assets/img/static/ma_logo.webp'
 import socialImage from './assets/img/static/smm.jpg'
 
-export const siteUrl = 'https://moveagency.az'
+export const siteUrl = 'https://www.moveagency.az'
 export const pagePaths = ['/', '/mexfilik-siyaseti', '/istifade-sertleri'] as const
 export const seoPaths = locales.flatMap(locale => pagePaths.map(path => getLocalizedPath(locale, path)))
 

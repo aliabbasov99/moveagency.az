@@ -126,7 +126,7 @@ export const dict = {
       unmuteLabel: 'Səsi aç',
     },
     seo: {
-      text: 'Əvvəlcə brendi anlayırıq. Sonra auditoriyanı. Daha sonra isə hər ikisini birləşdirən kreativ strategiya qururuq. Çünki bizim üçün kontent sadəcə paylaşım deyil. Hər kadr, hər söz və hər kampaniya brendin bir parçasıdır.',
+      text: 'Hər brendin danışacaq bir hekayəsi var. Move Agency olaraq biz həmin hekayəni insanların diqqətini çəkən, yadda qalan və sizinlə əlaqə qurmağa sövq edən şəkildə təqdim edirik. Biznesinizi və hədəf auditoriyanızı tanıyır, mesajınızı aydınlaşdırır və brendinizin özünəməxsus üslubunu ortaya çıxarırıq. Məqsədimiz sizi sadəcə daha çox insana göstərmək deyil, doğru insanlarla davamlı əlaqə qurmağınıza kömək etməkdir. İdeyadan təqdimata qədər hər addımda sizinlə birlikdə düşünür, brendinizin inkişafına xidmət edən həllər hazırlayırıq. Gəlin, brendinizi birlikdə hərəkətə gətirək.',
       logoAlt: 'Logo',
     },
   },
